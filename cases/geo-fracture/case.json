@@ -1,0 +1,174 @@
+{
+  "id": "geo-fracture",
+  "sceneId": "g4",
+  "title": "露头裂缝自动统计",
+  "methods": [
+    "cv"
+  ],
+  "version": "1.2.0",
+  "updated": "2026-10-23",
+  "tabs": {
+    "background": {
+      "label": "专业背景",
+      "judge": [
+        {
+          "label": "任务类型",
+          "value": "实例分割 + 几何反算",
+          "desc": "从照片里的裂缝到地质产状"
+        },
+        {
+          "label": "数据门槛",
+          "value": "≥ 1000 条裂缝掩膜",
+          "desc": "照片需带标定板或配点云"
+        },
+        {
+          "label": "收益",
+          "value": "半天 → 1 小时",
+          "desc": "单个露头统计（含人工复核）"
+        },
+        {
+          "label": "难度",
+          "value": "中",
+          "desc": "裂缝细长、必须几何标定"
+        }
+      ],
+      "lede": "裂缝型储层的产能主要取决于裂缝的密度、走向和开度。地下的裂缝看不见，只能用同一套地层在地表露头上的裂缝来类比。露头统计数据直接进入裂缝建模——**走向量偏 10°，模型里渗透率的方向就跟着偏**。",
+      "sections": [
+        {
+          "no": 1,
+          "en": "PROBLEM",
+          "title": "当前做法与问题",
+          "html": "<p>地质人员在露头上拉一条测线，用罗盘逐条量裂缝的走向和倾角，用尺子量间距和开度。一个露头需要半天。</p><p>问题有三个：<b>选择偏差</b>——陡壁和高处够不着，只能量容易到达的部分，统计结果并不代表整个露头；<b>读数因人而异</b>——不同人量同一条裂缝，走向可相差 10° 以上；<b>样本量小</b>——一个露头只能量几十条，统计不稳定。</p><div class=\"figure\"><svg viewBox=\"0 0 620 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"露头裂缝人工测量的问题\"><defs><clipPath id=\"g4c\"><rect x=\"20\" y=\"20\" width=\"380\" height=\"226\"/></clipPath></defs><rect x=\"20\" y=\"20\" width=\"380\" height=\"226\" fill=\"#d8ccad\"/><g clip-path=\"url(#g4c)\"><rect x=\"20\" y=\"20\" width=\"380\" height=\"120\" fill=\"url(#hatch)\" opacity=\".5\"/><defs><pattern id=\"hatch\" width=\"8\" height=\"8\" patternUnits=\"userSpaceOnUse\" patternTransform=\"rotate(45)\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"8\" stroke=\"#8a7f62\" stroke-width=\"1\"/></pattern></defs><line x1=\"196.7\" y1=\"100.7\" x2=\"208.8\" y2=\"128.4\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"211.0\" y1=\"205.7\" x2=\"237.6\" y2=\"253.4\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"44.7\" y1=\"101.8\" x2=\"-5.9\" y2=\"132.0\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"86.6\" y1=\"73.6\" x2=\"119.9\" y2=\"131.6\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"242.6\" y1=\"180.8\" x2=\"257.4\" y2=\"211.5\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"134.8\" y1=\"160.8\" x2=\"106.2\" y2=\"178.3\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"126.0\" y1=\"68.0\" x2=\"141.9\" y2=\"102.5\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"349.1\" y1=\"201.9\" x2=\"375.5\" y2=\"244.0\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"38.5\" y1=\"110.9\" x2=\"-4.8\" y2=\"143.1\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"73.6\" y1=\"141.7\" x2=\"48.8\" y2=\"159.2\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"60.1\" y1=\"134.0\" x2=\"90.2\" y2=\"173.7\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"361.5\" y1=\"110.0\" x2=\"377.2\" y2=\"139.9\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"238.7\" y1=\"60.5\" x2=\"208.9\" y2=\"72.6\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"229.8\" y1=\"147.3\" x2=\"268.8\" y2=\"205.2\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"389.3\" y1=\"50.3\" x2=\"352.7\" y2=\"65.2\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"250.0\" y1=\"34.6\" x2=\"274.4\" y2=\"82.4\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"308.9\" y1=\"43.3\" x2=\"330.4\" y2=\"92.2\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"192.5\" y1=\"106.4\" x2=\"165.5\" y2=\"121.2\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"317.8\" y1=\"91.7\" x2=\"345.1\" y2=\"130.9\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"146.9\" y1=\"43.8\" x2=\"97.8\" y2=\"80.5\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"39.1\" y1=\"182.1\" x2=\"-11.4\" y2=\"211.4\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"119.4\" y1=\"173.5\" x2=\"158.3\" y2=\"229.9\" stroke=\"#273041\" stroke-width=\"1.6\"/></g><rect x=\"20\" y=\"20\" width=\"380\" height=\"120\" fill=\"none\" stroke=\"#b05a51\" stroke-dasharray=\"5 4\"/><text x=\"30.0\" y=\"38.0\" font-size=\"10\" fill=\"#b05a51\" text-anchor=\"start\">陡壁上部：够不着，未测量</text><line x1=\"30\" y1=\"215\" x2=\"390\" y2=\"215\" stroke=\"#41699b\" stroke-width=\"2\"/><text x=\"30.0\" y=\"236.0\" font-size=\"10\" fill=\"#41699b\" text-anchor=\"start\">测线：只能布在能站到的下部</text><rect x=\"420\" y=\"20\" width=\"180\" height=\"226\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"430.0\" y=\"40.0\" font-size=\"9.5\" fill=\"#505050\" text-anchor=\"start\">同一条裂缝，两人读数</text><circle cx=\"470\" cy=\"120\" r=\"30\" fill=\"none\" stroke=\"#e9e4d8\"/><line x1=\"470\" y1=\"120\" x2=\"486.1\" y2=\"97.1\" stroke=\"#b26a39\" stroke-width=\"2.4\"/><text x=\"470.0\" y=\"170.0\" font-size=\"10.5\" fill=\"#b26a39\" text-anchor=\"middle\">A：N35°E</text><circle cx=\"552\" cy=\"120\" r=\"30\" fill=\"none\" stroke=\"#e9e4d8\"/><line x1=\"552\" y1=\"120\" x2=\"572.5\" y2=\"100.9\" stroke=\"#41699b\" stroke-width=\"2.4\"/><text x=\"552.0\" y=\"170.0\" font-size=\"10.5\" fill=\"#41699b\" text-anchor=\"middle\">B：N47°E</text><text x=\"510.0\" y=\"210.0\" font-size=\"10.5\" fill=\"#b05a51\" text-anchor=\"middle\">走向相差 12°</text></svg></div><div class=\"figcap\"><b>图 1</b><span>左：露头上部是陡壁，人够不着，测线只能布在下部，统计带有明显的选择偏差；右：两个人量同一条裂缝，走向读数相差 12°。这些是&quot;罗盘逐条量测&quot;的固有代价。</span></div>"
+        },
+        {
+          "no": 2,
+          "en": "INTERVENTION",
+          "title": "AI 能做什么",
+          "html": "<p>对露头多角度照片和无人机倾斜摄影做<b>裂缝实例分割</b>，逐条提取裂缝骨架；再借助相机标定和点云，把像素换算成真实尺度和空间方向，反算每条裂缝的走向、倾角和线密度。</p><p>替换的是<b>逐条量测</b>这一步。地质人员负责布置标定板、确定裂缝分组规则（按充填物、切割关系划分期次），并检查统计结果是否合理。</p><p>本案例的可运行示范覆盖<b>裂缝像素识别与方向统计</b>：在合成露头图像上用方向响应特征加逻辑回归分出裂缝像素，统计方向玫瑰图；实例分割、几何标定和真实产状反算不在演示范围内。</p><div class=\"figure\"><svg viewBox=\"0 0 620 132\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AI 介入点流程\"><rect x=\"8\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#e6f1ec\" stroke=\"#2f7d6b\" stroke-opacity=\".28\"/><rect x=\"8\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#2f7d6b\"/><text x=\"21\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">多角度照片</text><text x=\"21\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">标定板</text><text x=\"21\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">无人机补拍</text><text x=\"105\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#2f7d6b\">01</text><path d=\"M119 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"133\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f0f0f0\" stroke=\"#41699b\" stroke-opacity=\".28\"/><rect x=\"133\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#41699b\"/><text x=\"146\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">裂缝分割</text><text x=\"146\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">实例掩膜</text><text x=\"146\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">置信度</text><text x=\"230\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#41699b\">02</text><path d=\"M244 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"258\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#eeeeee\" stroke=\"#7e5a8d\" stroke-opacity=\".28\"/><rect x=\"258\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#7e5a8d\"/><text x=\"271\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">骨架化</text><text x=\"271\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">单条裂缝</text><text x=\"271\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">长度方向</text><text x=\"355\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#7e5a8d\">03</text><path d=\"M369 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"383\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f8ecdf\" stroke=\"#b26a39\" stroke-opacity=\".28\"/><rect x=\"383\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#b26a39\"/><text x=\"396\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">产状反算</text><text x=\"396\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">点云拟合</text><text x=\"396\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">走向倾角</text><text x=\"480\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#b26a39\">04</text><path d=\"M494 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"508\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f1f1dd\" stroke=\"#767a2e\" stroke-opacity=\".28\"/><rect x=\"508\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#767a2e\"/><text x=\"521\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">裂缝统计</text><text x=\"521\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">分组</text><text x=\"521\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">罗盘抽查</text><text x=\"605\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#767a2e\">05</text><text x=\"8\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#505050\" letter-spacing=\"1\">ALGORITHM</text><text x=\"383\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\"1\">HUMAN CORE</text><line x1=\"8\" y1=\"112\" x2=\"366\" y2=\"112\" stroke=\"#2f7d6b\" stroke-width=\"1.4\"/><text x=\"187\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#2f7d6b\">算法负责找出每一条裂缝</text><line x1=\"383\" y1=\"112\" x2=\"616\" y2=\"112\" stroke=\"#b26a39\" stroke-width=\"1.4\"/><text x=\"499\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#b26a39\">人负责标定、分组与核查</text></svg></div><div class=\"figcap\"><b>图 2</b><span>从照片到裂缝统计的五步。第 1 步的标定决定结果是&quot;图像里的方向&quot;还是&quot;地质产状&quot;；第 4 步决定像素能不能换算成可以进模型的参数。</span></div>"
+        },
+        {
+          "no": 3,
+          "en": "DATA",
+          "title": "你需要准备什么",
+          "html": "<p style=\"margin-bottom:14px\">立项前先对着这张清单打勾。<b>勾不满不代表不能做</b>，但每一项空缺都会在后期变成返工。清单可点击，勾选状态只在本页有效。</p><div class=\"checklist\"><div class=\"cl-head\"><span>数据准备清单 · 5 项</span><span class=\"cl-prog\"><span id=\"cl-txt\">0 / 5</span><span class=\"cl-bar\"><i id=\"cl-fill\"></i></span></span></div><div class=\"cl-item\" data-cl=\"0\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">露头多角度照片</span><span class=\"cl-s\">单露头 200—500 张，含标定板</span></span><span class=\"cl-n\">裂缝掩膜 ≥ 1000 条</span></div><div class=\"cl-item\" data-cl=\"1\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">无人机倾斜摄影点云</span><span class=\"cl-s\">覆盖整个露面，厘米级分辨率</span></span><span class=\"cl-n\">无需标注</span></div><div class=\"cl-item\" data-cl=\"2\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">产状实测记录</span><span class=\"cl-s\">罗盘实测 100—200 条</span></span><span class=\"cl-n\">作为验证集</span></div><div class=\"cl-item\" data-cl=\"3\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">测线位置与露头坐标</span><span class=\"cl-s\">GPS 定位</span></span><span class=\"cl-n\">统计结果的空间参考</span></div><div class=\"cl-item\" data-cl=\"4\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">裂缝分期描述</span><span class=\"cl-s\">充填物、切割关系</span></span><span class=\"cl-n\">用于分组</span></div></div>"
+        },
+        {
+          "no": 4,
+          "en": "DIFFICULTY",
+          "title": "技术难度与参考方向",
+          "html": "<div style=\"display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:2px\"><span class=\"dtag\" data-d=\"中\">难度 中</span><span class=\"small muted\">裂缝细长、对比度低，且必须完成几何标定才能把像素换算成地质产状。</span></div><div class=\"meter\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"\"></i></div><p>难度按三档标注：<b>低</b> = 数据现成、任务边界清晰、错了代价小；<b>中</b> = 需要一个月量级的标注与清洗，效果依赖后处理规则；<b>高</b> = 标签稀缺或安全约束硬，通常要先做小范围可行性验证再立项。</p><p style=\"margin-top:18px\"><span class=\"kicker plain\" style=\"color:var(--ink-4)\">可借鉴的通用技术</span></p><div class=\"refs\"><a class=\"ref\" href=\"#/method/cv\">实例分割<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/cv\">骨架化<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/cv\">摄影测量<span class=\"ar\">↗</span></a></div><p style=\"margin-top:18px\" class=\"small muted\">交叉环节：<a href=\"#/stage/seismic\" style=\"color:var(--jade-d);font-weight:600\">物探</a></p>"
+        }
+      ]
+    },
+    "workflow": {
+      "label": "案例流程",
+      "title": "案例：F 剖面 12 个露头的裂缝统计",
+      "lead": [
+        "为一个致密砂岩气藏建立裂缝模型，在储层同层位的野外剖面上选了 12 个露头，其中 5 个是无法攀爬的陡壁。按过去的做法，陡壁只能放弃。目标是**一周内完成 12 个露头的统计，主走向与罗盘实测相差 ≤ 5°**。",
+        "下面五步是这个案例的落地流程。注意第 1 步和第 2 步：它们不涉及模型本身，却决定了结果能不能用。"
+      ],
+      "stats": [
+        [
+          "露头",
+          "12 个"
+        ],
+        [
+          "陡壁露头",
+          "5 个"
+        ],
+        [
+          "照片",
+          "约 3600 张"
+        ],
+        [
+          "罗盘实测",
+          "150 条"
+        ],
+        [
+          "人工周期",
+          "半天 / 露头"
+        ],
+        [
+          "辅助后周期",
+          "1 小时 / 露头"
+        ]
+      ],
+      "steps": [
+        {
+          "name": "拍摄与标定",
+          "role": "工程环节",
+          "do": "每个露头放置标定板，多角度拍照，并用无人机补拍陡壁，生成厘米级点云。",
+          "effect": "像素能换算成真实长度和方向",
+          "trap": "没有标定板，只能得到\"图像里的方向\"，不是地质产状",
+          "fig": "<img src=\"assets/steps/geo-fracture/s1.svg\" alt=\"拍摄与标定示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：同一组裂缝从两个方向拍，照片里的角度对不上；右：用标定板求出相机朝向和比例尺后，换算成走向与罗盘实测一致。"
+        },
+        {
+          "name": "标注与分组规则",
+          "role": "工程环节",
+          "do": "标注 ≥ 1000 条裂缝掩膜；地质人员先定好分组规则，按充填物和切割关系划分期次。",
+          "effect": "标签和统计口径一致",
+          "trap": "层理面、岩性界面被当成裂缝标注进去",
+          "fig": "<img src=\"assets/steps/geo-fracture/s2.svg\" alt=\"标注与分组规则示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：先按充填物和切割关系分组，层理面不标；右：层理面混进标注后，玫瑰图多出一个假峰（红色）。"
+        },
+        {
+          "name": "裂缝分割",
+          "role": "算法核心",
+          "do": "实例分割网络逐条输出裂缝掩膜和置信度。",
+          "effect": "召回优先：细小裂缝也要找出来",
+          "trap": "阴影、植物根系、雨水痕迹会被误判为裂缝",
+          "fig": "<img src=\"assets/steps/geo-fracture/s3.svg\" alt=\"裂缝分割示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：模型逐条输出裂缝掩膜和置信度；右：阴影、植物根系、雨痕都是暗色条带，没有困难负样本时会被当成裂缝。"
+        },
+        {
+          "name": "骨架化与产状反算",
+          "role": "效果关键",
+          "do": "每条裂缝提取骨架，结合点云拟合裂缝面，算出走向、倾角和线密度。",
+          "effect": "从\"像素\"变成\"产状\"",
+          "trap": "照片倾斜拍摄时不做纠正，走向会系统性偏转",
+          "fig": "<img src=\"assets/steps/geo-fracture/s4.svg\" alt=\"骨架化与产状反算示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：掩膜骨架化后拟合出走向，与实测相差很小；右：相机倾斜时，照片里的方向系统性偏转，倾斜越大偏差越大。"
+        },
+        {
+          "name": "统计与罗盘抽查",
+          "role": "闭环",
+          "do": "输出玫瑰图和密度统计，用罗盘实测数据抽查；偏差大的露头重新拍摄标定。",
+          "effect": "统计结果有实测数据背书",
+          "trap": "只统计条数、不按长度加权，短小的风化裂隙会主导统计",
+          "fig": "<img src=\"assets/steps/geo-fracture/s5.svg\" alt=\"统计与罗盘抽查示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左、中：同一批数据，按条数统计被短小风化裂隙主导，按长度加权后两组主裂缝才显现；右：罗盘抽查，偏差大的露头重拍。"
+        }
+      ],
+      "metrics": {
+        "title": "怎么算\"统计对了\"",
+        "html": "<p>裂缝建模关心的不是每个像素分对没有，而是<b>统计量</b>对不对：主走向、各组裂缝的占比、线密度。像素级 IoU 只是中间指标；最终要用罗盘实测数据做验证。</p><div class=\"figure\"><svg viewBox=\"0 0 620 186\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"露头裂缝统计的评价方式\"><rect x=\"8\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"20\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#2f7d6b\" letter-spacing=\".8\">裂缝像素 IoU</text><rect x=\"24\" y=\"36\" width=\"160\" height=\"104\" fill=\"#d8ccad\"/><line x1=\"68\" y1=\"50\" x2=\"138\" y2=\"128\" stroke=\"#2f7d6b\" stroke-width=\"7\" opacity=\".45\"/><line x1=\"72\" y1=\"52\" x2=\"134\" y2=\"126\" stroke=\"#212837\" stroke-width=\"2\"/><text x=\"20\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">掩膜与人工标注重叠程度</text><rect x=\"214\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"226\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\".8\">主走向偏差</text><circle cx=\"310\" cy=\"90\" r=\"44\" fill=\"none\" stroke=\"#e9e4d8\"/><path d=\"M310 90 L334.0 53.2 L342.1 59.9 Z\" fill=\"#2f7d6b\" opacity=\".35\" stroke=\"#2f7d6b\"/><path d=\"M310 90 L336.6 54.9 L344.1 62.2 Z\" fill=\"#b26a39\" opacity=\".35\" stroke=\"#b26a39\"/><text x=\"230.0\" y=\"44.0\" font-size=\"8.5\" fill=\"#505050\" text-anchor=\"start\">绿：罗盘实测  橙：自动</text><text x=\"226\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">与罗盘实测相差 ≤ 5°</text><rect x=\"420\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"432\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#41699b\" letter-spacing=\".8\">线密度</text><line x1=\"440\" y1=\"100\" x2=\"592\" y2=\"100\" stroke=\"#41699b\" stroke-width=\"2\"/><line x1=\"450\" y1=\"70\" x2=\"458\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"467\" y1=\"70\" x2=\"475\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"484\" y1=\"70\" x2=\"492\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"501\" y1=\"70\" x2=\"509\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"518\" y1=\"70\" x2=\"526\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"535\" y1=\"70\" x2=\"543\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"552\" y1=\"70\" x2=\"560\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"569\" y1=\"70\" x2=\"577\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><line x1=\"586\" y1=\"70\" x2=\"594\" y2=\"128\" stroke=\"#273041\" stroke-width=\"1.6\"/><text x=\"516.0\" y=\"58.0\" font-size=\"10\" fill=\"#212837\" text-anchor=\"middle\">每米 4.5 条</text><text x=\"432\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">每米测线上的裂缝条数</text></svg></div><div class=\"figcap\"><b>图 3</b><span>左：像素级 IoU 衡量掩膜重叠程度，是中间指标；中：自动统计的主走向与罗盘实测对比；右：沿测线统计每米的裂缝条数。<b>真正进入裂缝模型的是后两项。</b></span></div><table class=\"dtable\"><thead><tr><th>指标</th><th>定义</th><th>验收目标</th></tr></thead><tbody><tr><td>裂缝像素 IoU</td><td>预测掩膜与人工掩膜的交并比</td><td>≥ 0.6</td></tr><tr><td>主走向偏差</td><td>自动统计与罗盘实测主走向的夹角</td><td>≤ 5°</td></tr><tr><td>线密度偏差</td><td>每米测线上裂缝条数的相对差</td><td>≤ 15%</td></tr><tr><td>露头覆盖率</td><td>被统计到的露头面积比例</td><td>≥ 90%</td></tr></tbody></table><p>可运行示范中的指标由页面在合成数据上实时计算，用来理解方法的行为，不代表真实工区效果。</p>"
+      },
+      "fails": [
+        {
+          "name": "层理与阴影误判",
+          "why": "层理面、岩性界面和阴影在照片上同样是暗色线条，不加区分会让裂缝密度虚高。"
+        },
+        {
+          "name": "拍摄角度偏差",
+          "why": "斜着拍的照片不经几何纠正，所有裂缝的走向都会朝同一个方向偏转。"
+        },
+        {
+          "name": "短小裂隙主导统计",
+          "why": "风化形成的短小裂隙数量多，按条数统计会压过真正控制渗流的长裂缝。"
+        },
+        {
+          "name": "不分期次",
+          "why": "不同期次的裂缝走向、充填情况不同，混在一起统计，玫瑰图失去地质意义。"
+        }
+      ]
+    },
+    "demo": {
+      "label": "可运行示范",
+      "mode": "auto",
+      "html": "demo/index.html",
+      "intro": "这是一张程序合成的露头影像，每条裂缝的位置和方向已知，所以能精确计算 IoU 并与真实方向对比；模型（方向滤波特征 + 逻辑回归）打开页面时用另一张合成影像现场训练。结果只用来说明方法原理和参数影响，不代表真实工区的效果。\n在合成露头上调岩面纹理与裂缝阈值，观察裂缝掩膜与方向玫瑰图——对应流程第 3、4 步。",
+      "height": 1080
+    }
+  }
+}

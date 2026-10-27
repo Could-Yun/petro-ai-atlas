@@ -1,0 +1,174 @@
+{
+  "id": "geo-anomaly",
+  "sceneId": "g2",
+  "title": "油气地球化学异常识别",
+  "methods": [
+    "opt"
+  ],
+  "version": "1.2.0",
+  "updated": "2026-10-23",
+  "tabs": {
+    "background": {
+      "label": "专业背景",
+      "judge": [
+        {
+          "label": "任务类型",
+          "value": "多指标异常检测",
+          "desc": "从背景里找出组合异常，再聚成靶区"
+        },
+        {
+          "label": "数据门槛",
+          "value": "300—3000 个采样点",
+          "desc": "另需 3—5 个已知靶区作验证"
+        },
+        {
+          "label": "收益",
+          "value": "1 周 → 1 天",
+          "desc": "单区块靶区圈定（含专家复核）"
+        },
+        {
+          "label": "难度",
+          "value": "中",
+          "desc": "样本少、空间自相关强"
+        }
+      ],
+      "lede": "地下油气会沿断裂和裂隙向上微渗漏，在土壤里留下吸附烃、酸解烃等化学痕迹。化探就是在地表密集采样、寻找这些痕迹的组合异常，用很低的成本在物探之前圈出优先靶区——**圈错了，后面的地震测线就布在了没有油气的地方**。",
+      "sections": [
+        {
+          "no": 1,
+          "en": "PROBLEM",
+          "title": "当前做法与问题",
+          "html": "<p>实验室化验出每个采样点的 5—10 项指标后，解释人员逐项画等值线，按&quot;均值 + 2 倍标准差&quot;给每个指标定阈值，再把几张单指标异常图叠在一起，凭经验圈出靶区。</p><p>问题在于：<b>单指标阈值受地表干扰大</b>，公路、村庄、工矿附近的污染点同样会超阈值，地形和季节也会改变指标水平；<b>多指标组合靠经验</b>，几项指标&quot;同时偏高&quot;到什么程度才算异常，没有统一标准；<b>靶区边界主观</b>，异常与背景之间的过渡带由人来画。</p><div class=\"figure\"><svg viewBox=\"0 0 620 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"单指标阈值法的问题\"><rect x=\"20\" y=\"30\" width=\"360\" height=\"210\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><path d=\"M20 200 C120 180,220 210,380 170\" stroke=\"#c9c2b0\" stroke-width=\"7\" fill=\"none\"/><text x=\"300.0\" y=\"166.0\" font-size=\"9\" fill=\"#505050\" text-anchor=\"start\">公路</text><rect x=\"300\" y=\"200\" width=\"22\" height=\"16\" fill=\"#c9c2b0\"/><rect x=\"326\" y=\"206\" width=\"16\" height=\"12\" fill=\"#c9c2b0\"/><text x=\"296.0\" y=\"232.0\" font-size=\"9\" fill=\"#505050\" text-anchor=\"start\">村庄</text><ellipse cx=\"150\" cy=\"105\" rx=\"70\" ry=\"44\" fill=\"#e6f1ec\" stroke=\"#2f7d6b\" stroke-dasharray=\"4 3\"/><circle cx=\"106.0\" cy=\"224.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"71.5\" cy=\"174.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"57.3\" cy=\"86.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"371.7\" cy=\"78.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"248.8\" cy=\"127.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"183.9\" cy=\"134.0\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"313.7\" cy=\"55.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"108.6\" cy=\"41.9\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"119.8\" cy=\"117.1\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"158.4\" cy=\"60.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"116.9\" cy=\"230.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"49.7\" cy=\"158.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"157.8\" cy=\"166.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"144.4\" cy=\"172.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"199.2\" cy=\"164.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"338.1\" cy=\"150.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"76.9\" cy=\"50.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"353.4\" cy=\"132.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"94.7\" cy=\"221.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"227.2\" cy=\"179.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"126.3\" cy=\"107.2\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"74.4\" cy=\"186.3\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"265.4\" cy=\"174.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"318.2\" cy=\"135.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"96.0\" cy=\"67.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"209.9\" cy=\"136.9\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"52.6\" cy=\"213.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"202.6\" cy=\"174.1\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"111.9\" cy=\"40.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"146.1\" cy=\"89.8\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"157.7\" cy=\"199.9\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"88.3\" cy=\"114.9\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"256.1\" cy=\"227.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"97.4\" cy=\"186.7\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"32.5\" cy=\"186.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"145.6\" cy=\"71.0\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"107.7\" cy=\"117.6\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"171.8\" cy=\"152.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"127.3\" cy=\"56.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"57.3\" cy=\"58.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"207.2\" cy=\"107.9\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"201.7\" cy=\"175.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"49.7\" cy=\"41.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"76.3\" cy=\"112.9\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"225.3\" cy=\"182.3\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"359.9\" cy=\"38.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"315.5\" cy=\"78.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"329.1\" cy=\"44.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"360.0\" cy=\"185.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"368.7\" cy=\"150.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"89.2\" cy=\"226.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"179.9\" cy=\"54.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"236.3\" cy=\"134.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"190.8\" cy=\"68.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"70.0\" cy=\"150.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"183.7\" cy=\"62.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"179.2\" cy=\"178.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"190.1\" cy=\"114.4\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"105.6\" cy=\"76.3\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"65.2\" cy=\"178.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"271.7\" cy=\"156.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"35.8\" cy=\"108.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"176.8\" cy=\"56.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"360.9\" cy=\"184.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"200.9\" cy=\"174.8\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"106.9\" cy=\"140.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"283.9\" cy=\"163.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"30.3\" cy=\"157.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"340.6\" cy=\"182.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"365.7\" cy=\"81.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"130.0\" cy=\"144.2\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"155.0\" cy=\"220.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"320.6\" cy=\"138.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"243.0\" cy=\"223.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"297.4\" cy=\"95.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"318.9\" cy=\"76.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"155.3\" cy=\"224.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"319.4\" cy=\"98.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"127.9\" cy=\"156.9\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"317.9\" cy=\"170.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"278.4\" cy=\"197.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"236.1\" cy=\"108.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"175.1\" cy=\"133.0\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"316.3\" cy=\"90.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"51.6\" cy=\"180.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"121.2\" cy=\"119.4\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"313.3\" cy=\"91.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"128.3\" cy=\"194.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"123.4\" cy=\"210.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"169.7\" cy=\"108.1\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"299.8\" cy=\"183.0\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"307.8\" cy=\"153.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"313.4\" cy=\"109.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"296.6\" cy=\"191.9\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"253.2\" cy=\"189.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"344.6\" cy=\"190.5\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"237.9\" cy=\"170.9\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"187.2\" cy=\"206.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"339.5\" cy=\"217.5\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"236.8\" cy=\"205.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"252.5\" cy=\"100.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"41.3\" cy=\"216.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"323.5\" cy=\"164.8\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"313.0\" cy=\"196.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"234.3\" cy=\"99.9\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"130.0\" cy=\"107.4\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"206.9\" cy=\"60.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"276.2\" cy=\"105.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"82.9\" cy=\"87.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"161.9\" cy=\"121.7\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"62.3\" cy=\"81.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"128.8\" cy=\"72.3\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"65.5\" cy=\"47.9\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"219.2\" cy=\"180.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"220.5\" cy=\"101.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"331.4\" cy=\"180.8\" r=\"3\" fill=\"#b05a51\"/><circle cx=\"221.6\" cy=\"219.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"371.1\" cy=\"218.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"73.6\" cy=\"101.4\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"168.3\" cy=\"70.8\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"48.9\" cy=\"210.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"229.4\" cy=\"157.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"170.7\" cy=\"219.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"227.0\" cy=\"211.9\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"345.4\" cy=\"172.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"196.4\" cy=\"109.1\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"209.6\" cy=\"97.9\" r=\"3\" fill=\"#7fb3a4\"/><circle cx=\"191.7\" cy=\"62.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"316.2\" cy=\"135.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"362.2\" cy=\"141.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"350.3\" cy=\"94.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"102.8\" cy=\"140.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"291.8\" cy=\"198.0\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"70.7\" cy=\"114.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"40.0\" cy=\"110.1\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"353.0\" cy=\"105.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"268.4\" cy=\"158.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"77.3\" cy=\"171.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"55.4\" cy=\"73.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"227.5\" cy=\"62.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"359.8\" cy=\"120.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"244.8\" cy=\"225.2\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"65.2\" cy=\"231.8\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"41.6\" cy=\"154.6\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"253.6\" cy=\"229.3\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"151.2\" cy=\"221.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"251.7\" cy=\"130.5\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"86.4\" cy=\"83.7\" r=\"3\" fill=\"#c9c2b0\"/><circle cx=\"153.6\" cy=\"105.2\" r=\"3\" fill=\"#2f7d6b\"/><circle cx=\"306.0\" cy=\"110.7\" r=\"3\" fill=\"#c9c2b0\"/><text x=\"150.0\" y=\"54.0\" font-size=\"10\" fill=\"#2f7d6b\" text-anchor=\"middle\">真正的微渗漏：多项指标同时偏高</text><text x=\"200.0\" y=\"252.0\" font-size=\"10\" fill=\"#b05a51\" text-anchor=\"middle\">单指标超阈值：公路、村庄旁的污染点</text><rect x=\"410\" y=\"30\" width=\"190\" height=\"210\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"420.0\" y=\"48.0\" font-size=\"9.5\" fill=\"#505050\" text-anchor=\"start\">吸附烃（单指标）</text><rect x=\"424\" y=\"175.0\" width=\"9\" height=\"45.0\" fill=\"#c9c2b0\"/><rect x=\"436\" y=\"167.5\" width=\"9\" height=\"52.5\" fill=\"#c9c2b0\"/><rect x=\"448\" y=\"172.0\" width=\"9\" height=\"48.0\" fill=\"#c9c2b0\"/><rect x=\"460\" y=\"160.0\" width=\"9\" height=\"60.0\" fill=\"#c9c2b0\"/><rect x=\"472\" y=\"103.0\" width=\"9\" height=\"117.0\" fill=\"#2f7d6b\"/><rect x=\"484\" y=\"97.0\" width=\"9\" height=\"123.0\" fill=\"#2f7d6b\"/><rect x=\"496\" y=\"115.0\" width=\"9\" height=\"105.0\" fill=\"#2f7d6b\"/><rect x=\"508\" y=\"166.0\" width=\"9\" height=\"54.0\" fill=\"#c9c2b0\"/><rect x=\"520\" y=\"175.0\" width=\"9\" height=\"45.0\" fill=\"#c9c2b0\"/><rect x=\"532\" y=\"85.0\" width=\"9\" height=\"135.0\" fill=\"#b05a51\"/><rect x=\"544\" y=\"169.0\" width=\"9\" height=\"51.0\" fill=\"#c9c2b0\"/><rect x=\"556\" y=\"173.5\" width=\"9\" height=\"46.5\" fill=\"#c9c2b0\"/><rect x=\"568\" y=\"92.5\" width=\"9\" height=\"127.5\" fill=\"#b05a51\"/><rect x=\"580\" y=\"170.5\" width=\"9\" height=\"49.5\" fill=\"#c9c2b0\"/><line x1=\"418\" y1=\"130.0\" x2=\"596\" y2=\"130.0\" stroke=\"#b26a39\" stroke-dasharray=\"4 3\"/><text x=\"424.0\" y=\"125.0\" font-size=\"9\" fill=\"#b26a39\" text-anchor=\"start\">均值 + 2σ</text><text x=\"505.0\" y=\"234.0\" font-size=\"9\" fill=\"#b05a51\" text-anchor=\"middle\">超阈值的点里一半是污染</text></svg></div><div class=\"figcap\"><b>图 1</b><span>左：真正的微渗漏区表现为多项指标同时偏高（绿），而公路、村庄旁的污染点只在单项指标上超阈值（红）；右：单指标柱状图里，超过&quot;均值 + 2σ&quot;的点有一半是污染。这是单指标阈值法的固有缺陷。</span></div>"
+        },
+        {
+          "no": 2,
+          "en": "INTERVENTION",
+          "title": "AI 能做什么",
+          "html": "<p>把靶区圈定建模成<b>多指标异常检测 + 空间聚类</b>：先用远离油气区和污染源的点学习各项指标的&quot;正常&quot;联合分布，再按每个点偏离背景的程度打分（近邻距离、孤立森林等），最后结合空间位置把高分点聚成连片异常，输出靶区概率图。</p><p>替换的是<b>逐项画图、人工叠合</b>这一步。化探专家仍负责解释每个异常的成因——是微渗漏还是污染——并结合地质与物探资料给靶区排序。</p><p>本案例的可运行示范实现的是<b>多指标异常打分</b>：用 5 近邻背景距离为合成采样点打分，并与单指标固定阈值对照；空间聚类成靶区与概率插值不在演示范围内。</p><div class=\"figure\"><svg viewBox=\"0 0 620 132\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AI 介入点流程\"><rect x=\"8\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#e6f1ec\" stroke=\"#2f7d6b\" stroke-opacity=\".28\"/><rect x=\"8\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#2f7d6b\"/><text x=\"21\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">化验数据</text><text x=\"21\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">5—10 项指标</text><text x=\"21\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">统一单位</text><text x=\"105\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#2f7d6b\">01</text><path d=\"M119 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"133\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f0f0f0\" stroke=\"#41699b\" stroke-opacity=\".28\"/><rect x=\"133\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#41699b\"/><text x=\"146\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">预处理</text><text x=\"146\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">对数变换</text><text x=\"146\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">批次校正</text><text x=\"230\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#41699b\">02</text><path d=\"M244 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"258\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#eeeeee\" stroke=\"#7e5a8d\" stroke-opacity=\".28\"/><rect x=\"258\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#7e5a8d\"/><text x=\"271\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">异常打分</text><text x=\"271\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">背景距离</text><text x=\"271\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">孤立森林</text><text x=\"355\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#7e5a8d\">03</text><path d=\"M369 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"383\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f8ecdf\" stroke=\"#b26a39\" stroke-opacity=\".28\"/><rect x=\"383\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#b26a39\"/><text x=\"396\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">空间聚类</text><text x=\"396\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">连片异常</text><text x=\"396\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">污染剔除</text><text x=\"480\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#b26a39\">04</text><path d=\"M494 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"508\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f1f1dd\" stroke=\"#767a2e\" stroke-opacity=\".28\"/><rect x=\"508\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#767a2e\"/><text x=\"521\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">靶区排序</text><text x=\"521\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">专家解释成因</text><text x=\"605\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#767a2e\">05</text><text x=\"8\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#505050\" letter-spacing=\"1\">ALGORITHM</text><text x=\"383\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\"1\">HUMAN CORE</text><line x1=\"8\" y1=\"112\" x2=\"366\" y2=\"112\" stroke=\"#2f7d6b\" stroke-width=\"1.4\"/><text x=\"187\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#2f7d6b\">算法负责给每个点打分，找出组合异常</text><line x1=\"383\" y1=\"112\" x2=\"616\" y2=\"112\" stroke=\"#b26a39\" stroke-width=\"1.4\"/><text x=\"499\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#b26a39\">人负责成因判断与排序</text></svg></div><div class=\"figcap\"><b>图 2</b><span>从化验数据到靶区排序的五步。第 2 步的批次与季节校正决定了不同批次的样品能不能放在一起比较；第 4 步决定&quot;异常点&quot;能不能变成有意义的&quot;靶区&quot;。</span></div>"
+        },
+        {
+          "no": 3,
+          "en": "DATA",
+          "title": "你需要准备什么",
+          "html": "<p style=\"margin-bottom:14px\">立项前先对着这张清单打勾。<b>勾不满不代表不能做</b>，但每一项空缺都会在后期变成返工。清单可点击，勾选状态只在本页有效。</p><div class=\"checklist\"><div class=\"cl-head\"><span>数据准备清单 · 5 项</span><span class=\"cl-prog\"><span id=\"cl-txt\">0 / 5</span><span class=\"cl-bar\"><i id=\"cl-fill\"></i></span></span></div><div class=\"cl-item\" data-cl=\"0\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">化探采样点</span><span class=\"cl-s\">单区块 300—3000 点</span></span><span class=\"cl-n\">无需逐点标注</span></div><div class=\"cl-item\" data-cl=\"1\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">多指标化验值</span><span class=\"cl-s\">吸附烃、酸解烃、ΔC 等 5—10 项</span></span><span class=\"cl-n\">专家圈定的 3—5 个已知靶区作验证</span></div><div class=\"cl-item\" data-cl=\"2\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">地质与遥感背景图层</span><span class=\"cl-s\">与采样区同范围</span></span><span class=\"cl-n\">无需标注</span></div><div class=\"cl-item\" data-cl=\"3\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">地表污染源分布</span><span class=\"cl-s\">道路、居民点、工矿位置</span></span><span class=\"cl-n\">用于剔除人为异常</span></div><div class=\"cl-item\" data-cl=\"4\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">采样记录</span><span class=\"cl-s\">采样深度、季节、土壤类型</span></span><span class=\"cl-n\">用于校正系统偏差</span></div></div>"
+        },
+        {
+          "no": 4,
+          "en": "DIFFICULTY",
+          "title": "技术难度与参考方向",
+          "html": "<div style=\"display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:2px\"><span class=\"dtag\" data-d=\"中\">难度 中</span><span class=\"small muted\">样本量小且空间自相关强，必须按空间分块交叉验证，否则精度会被严重高估。</span></div><div class=\"meter\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"\"></i></div><p>难度按三档标注：<b>低</b> = 数据现成、任务边界清晰、错了代价小；<b>中</b> = 需要一个月量级的标注与清洗，效果依赖后处理规则；<b>高</b> = 标签稀缺或安全约束硬，通常要先做小范围可行性验证再立项。</p><p style=\"margin-top:18px\"><span class=\"kicker plain\" style=\"color:var(--ink-4)\">可借鉴的通用技术</span></p><div class=\"refs\"><a class=\"ref\" href=\"#/method/opt\">异常检测<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/opt\">空间聚类<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/opt\">地统计插值<span class=\"ar\">↗</span></a></div><p style=\"margin-top:18px\" class=\"small muted\">交叉环节：<a href=\"#/stage/geology\" style=\"color:var(--jade-d);font-weight:600\">地质勘察</a></p>"
+        }
+      ]
+    },
+    "workflow": {
+      "label": "案例流程",
+      "title": "案例：D 区块 1200 个采样点的化探靶区圈定",
+      "lead": [
+        "D 区块面积约 600 km²，按 1 km 网格加密采样共 1200 个点，每点化验吸附烃、酸解烃、ΔC 等 7 项指标；区内已有 3 个经钻探证实的含油气区。过去一轮靶区圈定需要一周。目标是**把圈定压缩到一天，3 个已知含油气区全部落在得分前 5 名的靶区内**。",
+        "下面五步是这个案例的落地流程。注意第 1 步和第 4 步：它们不涉及模型本身，却决定了结果能不能用。"
+      ],
+      "stats": [
+        [
+          "采样点",
+          "1200"
+        ],
+        [
+          "化验指标",
+          "7 项"
+        ],
+        [
+          "已知含油气区",
+          "3 个"
+        ],
+        [
+          "区块面积",
+          "约 600 km²"
+        ],
+        [
+          "人工周期",
+          "1 周 / 轮"
+        ],
+        [
+          "辅助后周期",
+          "1 天 / 轮"
+        ]
+      ],
+      "steps": [
+        {
+          "name": "数据清洗与偏差校正",
+          "role": "工程环节",
+          "do": "按采样批次和土壤类型校正系统偏差，做对数变换，剔除化验异常值和重复样。",
+          "effect": "不同批次的样品可以放在一起比较",
+          "trap": "不同季节采的样直接混用，季节差会被当成异常",
+          "fig": "<img src=\"assets/steps/geo-anomaly/s1.svg\" alt=\"数据清洗与偏差校正示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：两批样品直接混用，秋季批次整体偏高，超阈值的几乎都来自秋季；右：对数变换并扣除各批次中位数后，两批按同一标准比较。"
+        },
+        {
+          "name": "背景建模",
+          "role": "工程环节",
+          "do": "用远离已知油气区和污染源的采样点建立背景分布；污染源附近的点单独打上标签。",
+          "effect": "模型知道\"正常\"长什么样",
+          "trap": "背景区里混入了异常点，阈值会被整体抬高",
+          "fig": "<img src=\"assets/steps/geo-anomaly/s2.svg\" alt=\"背景建模示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：只用远离已知油气区和公路缓冲带的样本（实心）建背景；右：背景里混进异常点后，阈值右移，一部分真异常检不出来。"
+        },
+        {
+          "name": "多指标异常打分",
+          "role": "算法核心",
+          "do": "每个点按偏离背景的程度打分，多项指标同时偏高的点得分最高。",
+          "effect": "组合异常排在单指标异常前面",
+          "trap": "指标量纲不统一时，数值大的指标会主导距离",
+          "fig": "<img src=\"assets/steps/geo-anomaly/s3.svg\" alt=\"多指标异常打分示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "A 只有甲烷高，B 只有碳同位素高，C 两项都偏高。左：原始量纲下甲烷数值大，A 排第一；右：换算成 z 值后相加，C 排第一。"
+        },
+        {
+          "name": "空间聚类与污染剔除",
+          "role": "效果关键",
+          "do": "高分点按空间位置聚类成连片异常；落在道路、居民点缓冲区内的孤立高分点降权。",
+          "effect": "从\"异常点\"变成\"靶区\"",
+          "trap": "聚类半径过大，几个无关的异常点会被连成一个大靶区",
+          "fig": "<img src=\"assets/steps/geo-anomaly/s4.svg\" alt=\"空间聚类与污染剔除示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "同一批高分点：半径合适时得到两个靶区，公路旁的孤立点降权；半径过大时无关的点被连成一个大靶区。"
+        },
+        {
+          "name": "专家排序与钻探回流",
+          "role": "闭环",
+          "do": "化探专家结合地质和物探资料解释每个靶区的成因并排序；后续钻探结果回流，修正背景模型。",
+          "effect": "每一口新井都在校准下一轮圈定",
+          "trap": "只按得分排序、不看成因，污染异常会排到前面",
+          "fig": "<img src=\"assets/steps/geo-anomaly/s5.svg\" alt=\"专家排序与钻探回流示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：专家结合成因复排，公路污染引起的 T2 从第 2 降到最后；右：每轮钻探结果回流后，靶区命中率逐轮提高（示意）。"
+        }
+      ],
+      "metrics": {
+        "title": "怎么算\"圈对了\"",
+        "html": "<p>化探靶区没有逐点真值，评价看两件事：已知含油气区有没有被排在前面，以及排在前面的靶区里有多少是污染等假异常。<b>必须按空间分块做交叉验证</b>——相邻采样点高度相关，随机划分会让验证结果严重偏高。</p><div class=\"figure\"><svg viewBox=\"0 0 620 186\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"化探异常识别的评价方式\"><rect x=\"8\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"20\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b05a51\" letter-spacing=\".8\">随机划分 · 不可用</text><circle cx=\"30\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"50\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"70\" cy=\"40\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"90\" cy=\"40\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"110\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"130\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"150\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"170\" cy=\"40\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"30\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"50\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"70\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"90\" cy=\"57\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"110\" cy=\"57\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"130\" cy=\"57\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"150\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"170\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"30\" cy=\"74\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"50\" cy=\"74\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"70\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"90\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"110\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"130\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"150\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"170\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"30\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"50\" cy=\"91\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"70\" cy=\"91\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"90\" cy=\"91\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"110\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"130\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"150\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"170\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"30\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"50\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"70\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"90\" cy=\"108\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"110\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"130\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"150\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"170\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"30\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"50\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"70\" cy=\"125\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"90\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"110\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"130\" cy=\"125\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"150\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"170\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><text x=\"20\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">相邻点分到两边，验证分数虚高</text><rect x=\"214\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"226\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#2f7d6b\" letter-spacing=\".8\">空间分块 · 正确</text><circle cx=\"236\" cy=\"40\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"256\" cy=\"40\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"276\" cy=\"40\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"296\" cy=\"40\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"316\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"336\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"356\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"376\" cy=\"40\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"236\" cy=\"57\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"256\" cy=\"57\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"276\" cy=\"57\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"296\" cy=\"57\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"316\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"336\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"356\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"376\" cy=\"57\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"236\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"256\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"276\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"296\" cy=\"74\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"316\" cy=\"74\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"336\" cy=\"74\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"356\" cy=\"74\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"376\" cy=\"74\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"236\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"256\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"276\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"296\" cy=\"91\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"316\" cy=\"91\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"336\" cy=\"91\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"356\" cy=\"91\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"376\" cy=\"91\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"236\" cy=\"108\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"256\" cy=\"108\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"276\" cy=\"108\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"296\" cy=\"108\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"316\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"336\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"356\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"376\" cy=\"108\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"236\" cy=\"125\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"256\" cy=\"125\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"276\" cy=\"125\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"296\" cy=\"125\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"316\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"336\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"356\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><circle cx=\"376\" cy=\"125\" r=\"4\" fill=\"#b26a39\"/><line x1=\"306\" y1=\"32\" x2=\"306\" y2=\"140\" stroke=\"#212837\" stroke-dasharray=\"3 3\"/><text x=\"226\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">训练与验证分属不同地块</text><rect x=\"420\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"432\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#2f7d6b\" letter-spacing=\".8\">靶区排序</text><rect x=\"442\" y=\"48.8\" width=\"16\" height=\"91.2\" rx=\"2\" fill=\"#2f7d6b\"/><text x=\"450.0\" y=\"150.0\" font-size=\"8\" fill=\"#505050\" text-anchor=\"middle\">1</text><rect x=\"461\" y=\"55.5\" width=\"16\" height=\"84.5\" rx=\"2\" fill=\"#b05a51\"/><text x=\"469.0\" y=\"150.0\" font-size=\"8\" fill=\"#505050\" text-anchor=\"middle\">2</text><rect x=\"480\" y=\"63.2\" width=\"16\" height=\"76.8\" rx=\"2\" fill=\"#2f7d6b\"/><text x=\"488.0\" y=\"150.0\" font-size=\"8\" fill=\"#505050\" text-anchor=\"middle\">3</text><rect x=\"499\" y=\"70.9\" width=\"16\" height=\"69.1\" rx=\"2\" fill=\"#c9c2b0\"/><text x=\"507.0\" y=\"150.0\" font-size=\"8\" fill=\"#505050\" text-anchor=\"middle\">4</text><rect x=\"518\" y=\"76.6\" width=\"16\" height=\"63.4\" rx=\"2\" fill=\"#2f7d6b\"/><text x=\"526.0\" y=\"150.0\" font-size=\"8\" fill=\"#505050\" text-anchor=\"middle\">5</text><rect x=\"537\" y=\"87.2\" width=\"16\" height=\"52.8\" rx=\"2\" fill=\"#c9c2b0\"/><text x=\"545.0\" y=\"150.0\" font-size=\"8\" fill=\"#505050\" text-anchor=\"middle\">6</text><rect x=\"556\" y=\"92.0\" width=\"16\" height=\"48.0\" rx=\"2\" fill=\"#c9c2b0\"/><text x=\"564.0\" y=\"150.0\" font-size=\"8\" fill=\"#505050\" text-anchor=\"middle\">7</text><rect x=\"575\" y=\"99.7\" width=\"16\" height=\"40.3\" rx=\"2\" fill=\"#c9c2b0\"/><text x=\"583.0\" y=\"150.0\" font-size=\"8\" fill=\"#505050\" text-anchor=\"middle\">8</text><text x=\"432\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">绿：已知含油气区；红：污染</text></svg></div><div class=\"figcap\"><b>图 3</b><span>左：随机划分时相邻采样点分到训练和验证两边，验证分数虚高；中：按地块划分才是真实的检验；右：靶区按得分排序，看已知含油气区（绿）排在第几名、前几名里混进了多少污染异常（红）。</span></div><table class=\"dtable\"><thead><tr><th>指标</th><th>定义</th><th>验收目标</th></tr></thead><tbody><tr><td>前 5 名命中数</td><td>已知含油气区落在得分前 5 名靶区内的个数</td><td>3 / 3</td></tr><tr><td>假异常比例</td><td>前 10 名靶区中经核实为污染的比例</td><td>≤ 20%</td></tr><tr><td>空间分块验证</td><td>训练与验证分属不同地块</td><td>必须执行</td></tr><tr><td>靶区面积</td><td>前 5 名靶区的总面积占区块比例</td><td>≤ 15%，越集中越好</td></tr></tbody></table><p>可运行示范中的指标由页面在合成数据上实时计算，用来理解方法的行为，不代表真实工区效果。</p>"
+      },
+      "fails": [
+        {
+          "name": "污染异常排在前面",
+          "why": "公路、村庄、工矿附近的点在某几项指标上很高，如果不做污染源缓冲区和成因判断，它们会挤占前几名靶区。"
+        },
+        {
+          "name": "随机划分高估效果",
+          "why": "相邻采样点几乎一样，随机划分时模型等于\"看过答案\"，验证精度很高，换个区块就失灵。"
+        },
+        {
+          "name": "批次与季节偏差",
+          "why": "不同批次、不同季节采的样品系统性偏高或偏低，不校正就会被识别成大片\"异常\"。"
+        },
+        {
+          "name": "靶区边界过大",
+          "why": "聚类半径过大或阈值过低，靶区覆盖了区块的一大半，失去了\"优先\"的意义。"
+        }
+      ]
+    },
+    "demo": {
+      "label": "可运行示范",
+      "mode": "auto",
+      "html": "demo/index.html",
+      "intro": "这是一组程序合成的化探采样点，哪里是油气微渗漏、哪里是污染已知，所以能精确计算查准率和召回率；异常分按与背景参考样本的距离计算，并与单指标阈值对比。结果只用来说明方法原理和参数影响，不代表真实工区的效果。\n在合成采样点上调化验扰动与异常距离阈值，比较多指标异常打分与单指标阈值的结果——对应流程第 3 步。",
+      "height": 1080
+    }
+  }
+}

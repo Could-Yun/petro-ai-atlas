@@ -1,0 +1,175 @@
+{
+  "id": "seis-reservoir",
+  "sceneId": "s4",
+  "title": "储层参数反演",
+  "methods": [
+    "cv",
+    "opt"
+  ],
+  "version": "1.2.0",
+  "updated": "2026-10-23",
+  "tabs": {
+    "background": {
+      "label": "专业背景",
+      "judge": [
+        {
+          "label": "任务类型",
+          "value": "多属性回归",
+          "desc": "从地震属性预测每个位置的孔隙度"
+        },
+        {
+          "label": "数据门槛",
+          "value": "20—50 口井",
+          "desc": "井点孔隙度作标签，并留出盲井"
+        },
+        {
+          "label": "收益",
+          "value": "3 周 → 3 天",
+          "desc": "一个层段的孔隙度预测（含盲井检验）"
+        },
+        {
+          "label": "难度",
+          "value": "中",
+          "desc": "井少，井震尺度不匹配"
+        }
+      ],
+      "lede": "孔隙度决定了储层能装多少油气。井上的孔隙度是准的，但井与井之间相隔几百米到几公里；地震数据覆盖全区，却只能间接反映孔隙度。反演就是用井去\"翻译\"地震——**翻译错了，储量计算和井位部署都会跟着错**。",
+      "sections": [
+        {
+          "no": 1,
+          "en": "PROBLEM",
+          "title": "当前做法与问题",
+          "html": "<p>常规做法是建立初始模型，做叠后或叠前反演得到声阻抗，再用井上的岩石物理关系把阻抗转换成孔隙度。</p><p>问题有三个：<b>流程长、参数多</b>，每换一个工区都要重新调；<b>多解性强</b>，高孔隙度和高泥质含量有时在阻抗上看起来一样，单靠阻抗分不开；<b>井少时偏离地质认识</b>，远离井的外推区几乎不受约束。</p><div class=\"figure\"><svg viewBox=\"0 0 620 260\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"常规反演的多解性\"><rect x=\"20\" y=\"20\" width=\"360\" height=\"226\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><line x1=\"60\" y1=\"210\" x2=\"360\" y2=\"210\" stroke=\"#c9c2b0\"/><line x1=\"60\" y1=\"40\" x2=\"60\" y2=\"210\" stroke=\"#c9c2b0\"/><text x=\"360.0\" y=\"228.0\" font-size=\"9.5\" fill=\"#505050\" text-anchor=\"end\">声阻抗 →</text><text x=\"52.0\" y=\"36.0\" font-size=\"9.5\" fill=\"#505050\" text-anchor=\"end\">孔隙度</text><circle cx=\"133.7\" cy=\"86.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"111.8\" cy=\"78.5\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"88.0\" cy=\"88.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"286.1\" cy=\"145.3\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"276.6\" cy=\"150.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"144.7\" cy=\"87.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"116.6\" cy=\"81.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"320.4\" cy=\"166.4\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"293.8\" cy=\"153.8\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"122.2\" cy=\"101.1\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"153.7\" cy=\"109.8\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"300.8\" cy=\"171.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"307.6\" cy=\"155.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"251.4\" cy=\"135.6\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"206.6\" cy=\"118.7\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"94.1\" cy=\"67.9\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"322.3\" cy=\"164.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"151.1\" cy=\"107.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"315.4\" cy=\"182.7\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"299.0\" cy=\"168.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"207.3\" cy=\"132.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"186.4\" cy=\"108.7\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"113.6\" cy=\"89.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"81.7\" cy=\"57.1\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"82.5\" cy=\"75.7\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"214.3\" cy=\"130.5\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"197.2\" cy=\"133.9\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"122.8\" cy=\"65.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"181.5\" cy=\"108.9\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"144.6\" cy=\"86.1\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"166.1\" cy=\"106.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"220.8\" cy=\"135.6\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"314.2\" cy=\"165.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"131.8\" cy=\"89.9\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"276.6\" cy=\"156.1\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"159.4\" cy=\"107.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"117.9\" cy=\"88.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"258.3\" cy=\"143.5\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"311.9\" cy=\"153.8\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"329.2\" cy=\"177.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"74.9\" cy=\"73.1\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"279.3\" cy=\"132.6\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"180.8\" cy=\"101.5\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"290.8\" cy=\"161.5\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"149.2\" cy=\"95.7\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"106.8\" cy=\"73.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"173.0\" cy=\"101.8\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"72.5\" cy=\"68.8\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"82.1\" cy=\"64.2\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"167.9\" cy=\"94.4\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"148.4\" cy=\"80.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"184.5\" cy=\"100.5\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"126.1\" cy=\"86.8\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"115.5\" cy=\"83.9\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"252.7\" cy=\"140.4\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"202.5\" cy=\"119.1\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"137.2\" cy=\"89.8\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"212.9\" cy=\"125.3\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"278.9\" cy=\"172.6\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"199.0\" cy=\"106.7\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"135.3\" cy=\"94.9\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"183.7\" cy=\"112.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"137.1\" cy=\"82.3\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"204.6\" cy=\"131.5\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"78.5\" cy=\"69.7\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"126.2\" cy=\"83.3\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"132.5\" cy=\"88.9\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"83.8\" cy=\"75.0\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"320.6\" cy=\"192.3\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"178.8\" cy=\"120.9\" r=\"3\" fill=\"#2f7d6b\" opacity=\".8\"/><circle cx=\"280.3\" cy=\"190.6\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"250.8\" cy=\"183.7\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"203.4\" cy=\"150.6\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"275.1\" cy=\"177.7\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"280.1\" cy=\"176.0\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"234.2\" cy=\"169.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"261.1\" cy=\"184.9\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"209.8\" cy=\"168.9\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"233.7\" cy=\"168.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"284.4\" cy=\"189.8\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"290.7\" cy=\"167.2\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"291.8\" cy=\"177.0\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"236.3\" cy=\"150.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"134.1\" cy=\"125.8\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"293.1\" cy=\"188.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"141.6\" cy=\"135.7\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"230.1\" cy=\"176.7\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"285.3\" cy=\"189.9\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"151.3\" cy=\"118.6\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"112.5\" cy=\"122.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"275.6\" cy=\"170.0\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"258.0\" cy=\"164.9\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"275.9\" cy=\"196.6\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"148.1\" cy=\"140.7\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"236.9\" cy=\"175.3\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"256.2\" cy=\"159.2\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"199.1\" cy=\"155.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"116.5\" cy=\"124.6\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"222.4\" cy=\"177.9\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"224.9\" cy=\"161.7\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"136.2\" cy=\"140.2\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"208.8\" cy=\"146.8\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"112.0\" cy=\"114.9\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"126.1\" cy=\"140.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"212.7\" cy=\"168.8\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"168.8\" cy=\"133.3\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"154.2\" cy=\"158.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"128.0\" cy=\"126.6\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"131.6\" cy=\"141.8\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"206.9\" cy=\"167.9\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"192.0\" cy=\"142.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"122.6\" cy=\"137.3\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"276.6\" cy=\"179.0\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"268.1\" cy=\"171.8\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"189.8\" cy=\"148.9\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"275.2\" cy=\"185.4\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"143.3\" cy=\"128.3\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"174.0\" cy=\"137.2\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"212.4\" cy=\"148.0\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"111.1\" cy=\"129.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"168.9\" cy=\"151.8\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"245.2\" cy=\"172.7\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"201.5\" cy=\"149.2\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"270.2\" cy=\"176.2\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><circle cx=\"177.4\" cy=\"143.5\" r=\"3\" fill=\"#b26a39\" opacity=\".8\"/><line x1=\"235\" y1=\"40\" x2=\"235\" y2=\"210\" stroke=\"#b05a51\" stroke-dasharray=\"4 3\"/><text x=\"240.0\" y=\"54.0\" font-size=\"10\" fill=\"#b05a51\" text-anchor=\"start\">同一阻抗，两种孔隙度</text><text x=\"64.0\" y=\"232.0\" font-size=\"9.5\" fill=\"#2f7d6b\" text-anchor=\"start\">● 纯砂岩</text><text x=\"122.0\" y=\"232.0\" font-size=\"9.5\" fill=\"#b26a39\" text-anchor=\"start\">● 泥质砂岩</text><rect x=\"400\" y=\"20\" width=\"200\" height=\"226\" fill=\"#e8ede4\" stroke=\"#e9e4d8\"/><text x=\"410.0\" y=\"40.0\" font-size=\"9.5\" fill=\"#505050\" text-anchor=\"start\">平面：井少，井间靠外推</text><circle cx=\"440\" cy=\"90\" r=\"5\" fill=\"#212837\"/><circle cx=\"480\" cy=\"150\" r=\"5\" fill=\"#212837\"/><circle cx=\"520\" cy=\"100\" r=\"5\" fill=\"#212837\"/><rect x=\"540\" y=\"160\" width=\"52\" height=\"76\" fill=\"#b05a51\" opacity=\".18\"/><text x=\"566.0\" y=\"200.0\" font-size=\"9.5\" fill=\"#b05a51\" text-anchor=\"middle\">外推区</text></svg></div><div class=\"figcap\"><b>图 1</b><span>左：纯砂岩（绿）和泥质砂岩（橙）在阻抗—孔隙度交会图上重叠，同一个阻抗可以对应两种孔隙度；右：井点稀少，井间和外推区的结果几乎没有约束。</span></div>"
+        },
+        {
+          "no": 2,
+          "en": "INTERVENTION",
+          "title": "AI 能做什么",
+          "html": "<p>用井点上的多种地震属性和测井孔隙度训练<b>回归模型</b>（深度网络，或带非线性特征的回归），建立&quot;多属性 → 孔隙度&quot;的映射，作为快速的代理反演；在损失函数里加入物理约束，防止出现物理上不可能的结果。</p><p>替换的是<b>逐工区调反演参数</b>这一步。人负责井震标定、挑选有物理意义的属性，并用地质模型检查结果——尤其是远离井的外推区。</p><p>本案例的可运行示范用非线性特征的岭回归，在合成剖面上从阻抗和振幅两个属性预测孔隙度。合成数据里阻抗同时受泥质含量影响，可以直接看到多属性怎样减少多解性，以及标定井数与外推误差的关系。</p><div class=\"figure\"><svg viewBox=\"0 0 620 132\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AI 介入点流程\"><rect x=\"8\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#e6f1ec\" stroke=\"#2f7d6b\" stroke-opacity=\".28\"/><rect x=\"8\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#2f7d6b\"/><text x=\"21\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">井震标定</text><text x=\"21\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">时深关系</text><text x=\"21\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">尺度匹配</text><text x=\"105\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#2f7d6b\">01</text><path d=\"M119 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"133\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f0f0f0\" stroke=\"#41699b\" stroke-opacity=\".28\"/><rect x=\"133\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#41699b\"/><text x=\"146\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">属性优选</text><text x=\"146\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">阻抗 / 振幅</text><text x=\"146\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">频率</text><text x=\"230\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#41699b\">02</text><path d=\"M244 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"258\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#eeeeee\" stroke=\"#7e5a8d\" stroke-opacity=\".28\"/><rect x=\"258\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#7e5a8d\"/><text x=\"271\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">回归映射</text><text x=\"271\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">非线性特征</text><text x=\"271\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">物理约束</text><text x=\"355\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#7e5a8d\">03</text><path d=\"M369 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"383\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f8ecdf\" stroke=\"#b26a39\" stroke-opacity=\".28\"/><rect x=\"383\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#b26a39\"/><text x=\"396\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">盲井检验</text><text x=\"396\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">留井验证</text><text x=\"396\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">外推检查</text><text x=\"480\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#b26a39\">04</text><path d=\"M494 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"508\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f1f1dd\" stroke=\"#767a2e\" stroke-opacity=\".28\"/><rect x=\"508\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#767a2e\"/><text x=\"521\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">孔隙度体</text><text x=\"521\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">地质审核</text><text x=\"605\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#767a2e\">05</text><text x=\"8\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#505050\" letter-spacing=\"1\">ALGORITHM</text><text x=\"383\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\"1\">HUMAN CORE</text><line x1=\"8\" y1=\"112\" x2=\"366\" y2=\"112\" stroke=\"#2f7d6b\" stroke-width=\"1.4\"/><text x=\"187\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#2f7d6b\">算法负责建立属性到孔隙度的映射</text><line x1=\"383\" y1=\"112\" x2=\"616\" y2=\"112\" stroke=\"#b26a39\" stroke-width=\"1.4\"/><text x=\"499\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#b26a39\">人负责盲井与地质检查</text></svg></div><div class=\"figcap\"><b>图 2</b><span>从井震标定到孔隙度体的五步。第 1 步决定井上的标签和地震属性能不能对得上；第 4 步决定这个映射在没有井的地方能不能信。</span></div>"
+        },
+        {
+          "no": 3,
+          "en": "DATA",
+          "title": "你需要准备什么",
+          "html": "<p style=\"margin-bottom:14px\">立项前先对着这张清单打勾。<b>勾不满不代表不能做</b>，但每一项空缺都会在后期变成返工。清单可点击，勾选状态只在本页有效。</p><div class=\"checklist\"><div class=\"cl-head\"><span>数据准备清单 · 5 项</span><span class=\"cl-prog\"><span id=\"cl-txt\">0 / 5</span><span class=\"cl-bar\"><i id=\"cl-fill\"></i></span></span></div><div class=\"cl-item\" data-cl=\"0\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">地震属性体</span><span class=\"cl-s\">振幅、频率、阻抗等多属性</span></span><span class=\"cl-n\">无需逐点标注</span></div><div class=\"cl-item\" data-cl=\"1\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">测井解释参数</span><span class=\"cl-s\">井点孔隙度、饱和度、净毛比</span></span><span class=\"cl-n\">20—50 口井</span></div><div class=\"cl-item\" data-cl=\"2\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">地质模型</span><span class=\"cl-s\">沉积相与砂体展布</span></span><span class=\"cl-n\">作为约束</span></div><div class=\"cl-item\" data-cl=\"3\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">合成记录与时深关系</span><span class=\"cl-s\">每口井一套</span></span><span class=\"cl-n\">井震标定的前提</span></div><div class=\"cl-item\" data-cl=\"4\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">盲井</span><span class=\"cl-s\">至少留出 20% 的井</span></span><span class=\"cl-n\">只用于验证，不参与训练</span></div></div>"
+        },
+        {
+          "no": 4,
+          "en": "DIFFICULTY",
+          "title": "技术难度与参考方向",
+          "html": "<div style=\"display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:2px\"><span class=\"dtag\" data-d=\"中\">难度 中</span><span class=\"small muted\">井样本少、井震尺度不匹配，容易出现&quot;看起来很像&quot;但物理不可信的结果。</span></div><div class=\"meter\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"\"></i></div><p>难度按三档标注：<b>低</b> = 数据现成、任务边界清晰、错了代价小；<b>中</b> = 需要一个月量级的标注与清洗，效果依赖后处理规则；<b>高</b> = 标签稀缺或安全约束硬，通常要先做小范围可行性验证再立项。</p><p style=\"margin-top:18px\"><span class=\"kicker plain\" style=\"color:var(--ink-4)\">可借鉴的通用技术</span></p><div class=\"refs\"><a class=\"ref\" href=\"#/method/opt\">深度回归<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/opt\">多属性融合<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/opt\">物理约束损失<span class=\"ar\">↗</span></a></div><p style=\"margin-top:18px\" class=\"small muted\">交叉环节：<a href=\"#/stage/welllog\" style=\"color:var(--jade-d);font-weight:600\">测井</a></p>"
+        }
+      ]
+    },
+    "workflow": {
+      "label": "案例流程",
+      "title": "案例：J 区块 28 口井的孔隙度预测",
+      "lead": [
+        "J 区块目的层为砂泥岩互层，面积 120 km²，有 28 口井的孔隙度解释。过去一个层段的反演和孔隙度转换需要三周。目标是**压缩到三天，盲井上的预测误差不超过 2 个孔隙度百分点**。",
+        "下面五步是这个案例的落地流程。注意第 1 步和第 2 步：它们不涉及模型本身，却决定了结果能不能用。"
+      ],
+      "stats": [
+        [
+          "井",
+          "28 口"
+        ],
+        [
+          "盲井",
+          "6 口"
+        ],
+        [
+          "地震属性",
+          "8 种"
+        ],
+        [
+          "面积",
+          "120 km²"
+        ],
+        [
+          "人工周期",
+          "3 周 / 层段"
+        ],
+        [
+          "辅助后周期",
+          "3 天 / 层段"
+        ]
+      ],
+      "steps": [
+        {
+          "name": "井震标定",
+          "role": "工程环节",
+          "do": "做合成记录、校正时深关系，把米级的测井孔隙度平均到地震尺度。",
+          "effect": "井上的标签和地震属性对得上",
+          "trap": "直接用米级测井值当标签，模型学到的是噪声",
+          "fig": "<img src=\"assets/steps/seis-reservoir/s1.svg\" alt=\"井震标定示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：米级测井孔隙度（灰）平均到地震尺度（绿）；右：地震属性与地震尺度孔隙度相关性高，直接用米级值当标签，相关性被薄层变化冲淡。"
+        },
+        {
+          "name": "属性优选与留井",
+          "role": "工程环节",
+          "do": "挑选与孔隙度、泥质含量有物理联系的属性；**按井留出 6 口盲井**，不参与任何训练和调参。",
+          "effect": "属性有物理意义，验证有独立样本",
+          "trap": "属性太多而井太少，模型会记住井点",
+          "fig": "<img src=\"assets/steps/seis-reservoir/s2.svg\" alt=\"属性优选与留井示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：只保留有岩石物理依据的属性；右：22 口井中留 6 口盲井，属性越多训练误差越小，盲井误差反而上升。"
+        },
+        {
+          "name": "训练回归映射",
+          "role": "算法核心",
+          "do": "非线性回归建立属性到孔隙度的映射，加入正则和物理约束（孔隙度在合理范围、随阻抗单调变化）。",
+          "effect": "井间有平滑、合理的预测",
+          "trap": "只追求训练井误差最小，外推区出现物理上不可能的值",
+          "fig": "<img src=\"assets/steps/seis-reservoir/s3.svg\" alt=\"训练回归映射示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：单调、限定在合理范围内的映射，外推区仍然合理；右：只追求训练误差的高次曲线，在外推区出现负孔隙度和过高值。"
+        },
+        {
+          "name": "盲井检验与外推检查",
+          "role": "效果关键",
+          "do": "在 6 口盲井上统计误差；检查远离井的区域预测是否符合沉积模式和构造趋势。",
+          "effect": "知道这个映射在哪里能信、在哪里不能信",
+          "trap": "只看井附近，外推区的系统偏差看不出来",
+          "fig": "<img src=\"assets/steps/seis-reservoir/s4.svg\" alt=\"盲井检验与外推检查示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：训练井集中在西部，东部为外推区；右：误差随到最近训练井的距离增大，只看井附近看不出外推区的偏差。"
+        },
+        {
+          "name": "地质审核与回流",
+          "role": "闭环",
+          "do": "地质人员检查孔隙度图与相带、构造的关系；新钻井结果回流，重新训练。",
+          "effect": "模型随新井持续校准",
+          "trap": "新井不回流，半年后模型就和实际脱节",
+          "fig": "<img src=\"assets/steps/seis-reservoir/s5.svg\" alt=\"地质审核与回流示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：孔隙度图对照河道相带审核，相带外的高值区需要复查；右：新井不回流时误差逐月变大，定期回流重训能稳住（示意）。"
+        }
+      ],
+      "metrics": {
+        "title": "怎么算\"反演对了\"",
+        "html": "<p>唯一可信的检验是<b>盲井</b>：不参与训练的井上，预测值与测井孔隙度的误差。训练井附近误差小，什么也说明不了。另外要单独检查<b>远离井的外推区</b>——那里没有井可以对比，只能看是否符合地质模型的趋势。</p><div class=\"figure\"><svg viewBox=\"0 0 620 186\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"储层参数反演的评价方式\"><rect x=\"8\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"20\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#505050\" letter-spacing=\".8\">训练井</text><line x1=\"38\" y1=\"140\" x2=\"170\" y2=\"40\" stroke=\"#c9c2b0\" stroke-dasharray=\"3 3\"/><circle cx=\"55.7\" cy=\"130.5\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"71.7\" cy=\"108.9\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"103.4\" cy=\"84.9\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"142.1\" cy=\"62.9\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"50.4\" cy=\"138.1\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"95.1\" cy=\"98.1\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"138.6\" cy=\"68.1\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"133.2\" cy=\"67.9\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"68.2\" cy=\"125.2\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"42.0\" cy=\"134.0\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"41.4\" cy=\"128.3\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"88.3\" cy=\"99.4\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"66.6\" cy=\"117.5\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"67.3\" cy=\"118.3\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"95.8\" cy=\"93.3\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"68.5\" cy=\"117.0\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"66.9\" cy=\"114.9\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"40.8\" cy=\"138.7\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"148.6\" cy=\"50.9\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"62.5\" cy=\"119.4\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"169.0\" cy=\"42.0\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"81.9\" cy=\"105.2\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"133.2\" cy=\"65.6\" r=\"3.2\" fill=\"#505050\"/><circle cx=\"93.7\" cy=\"88.7\" r=\"3.2\" fill=\"#505050\"/><text x=\"38.0\" y=\"48.0\" font-size=\"8.5\" fill=\"#505050\" text-anchor=\"start\">预测 ↑ / 实测 →</text><text x=\"20\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">误差小，不能说明问题</text><rect x=\"214\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"226\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#2f7d6b\" letter-spacing=\".8\">盲井</text><line x1=\"244\" y1=\"140\" x2=\"376\" y2=\"40\" stroke=\"#c9c2b0\" stroke-dasharray=\"3 3\"/><circle cx=\"370.2\" cy=\"48.3\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"255.2\" cy=\"130.2\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"354.3\" cy=\"54.9\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"284.7\" cy=\"91.4\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"324.0\" cy=\"67.0\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"264.9\" cy=\"114.3\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"300.8\" cy=\"81.8\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"375.3\" cy=\"52.4\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"369.3\" cy=\"32.5\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"279.4\" cy=\"109.6\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"248.7\" cy=\"149.6\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"286.0\" cy=\"110.5\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"294.2\" cy=\"113.4\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"318.0\" cy=\"74.7\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"275.2\" cy=\"126.9\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"262.0\" cy=\"127.9\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"311.3\" cy=\"107.0\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"268.0\" cy=\"121.7\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"362.0\" cy=\"56.3\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"363.7\" cy=\"30.6\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"344.7\" cy=\"66.5\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"373.5\" cy=\"31.0\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"371.0\" cy=\"54.5\" r=\"3.2\" fill=\"#2f7d6b\"/><circle cx=\"338.4\" cy=\"85.5\" r=\"3.2\" fill=\"#2f7d6b\"/><text x=\"244.0\" y=\"48.0\" font-size=\"8.5\" fill=\"#505050\" text-anchor=\"start\">预测 ↑ / 实测 →</text><text x=\"226\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">唯一可信的检验</text><rect x=\"420\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"432\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b05a51\" letter-spacing=\".8\">外推区</text><rect x=\"440\" y=\"40\" width=\"152\" height=\"100\" fill=\"#e8ede4\"/><circle cx=\"460\" cy=\"90\" r=\"4\" fill=\"#212837\"/><circle cx=\"490\" cy=\"90\" r=\"4\" fill=\"#212837\"/><circle cx=\"515\" cy=\"90\" r=\"4\" fill=\"#212837\"/><rect x=\"538\" y=\"40\" width=\"54\" height=\"100\" fill=\"#b05a51\" opacity=\".18\"/><text x=\"565.0\" y=\"94.0\" font-size=\"9.5\" fill=\"#b05a51\" text-anchor=\"middle\">外推区</text><text x=\"432\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">远离井的区域单独检查</text></svg></div><div class=\"figcap\"><b>图 3</b><span>左：训练井上的预测几乎贴着对角线，但这不能说明问题；中：盲井的散点才反映真实误差；右：远离井的外推区要单独检查，看是否有系统偏差。</span></div><table class=\"dtable\"><thead><tr><th>指标</th><th>定义</th><th>验收目标</th></tr></thead><tbody><tr><td>盲井 RMSE</td><td>盲井上预测孔隙度与测井值的均方根误差</td><td>≤ 2 个百分点</td></tr><tr><td>盲井相关系数</td><td>盲井上预测与实测的相关系数</td><td>≥ 0.8</td></tr><tr><td>外推区偏差</td><td>远离井区域与地质模型趋势的平均偏差</td><td>无系统偏差</td></tr><tr><td>物理越界</td><td>孔隙度超出合理范围的网格比例</td><td>0%</td></tr></tbody></table><p>可运行示范中的指标由页面在合成数据上实时计算，用来理解方法的行为，不代表真实工区效果。</p>"
+      },
+      "fails": [
+        {
+          "name": "井震尺度不匹配",
+          "why": "测井是米级，地震是十米级，不做尺度平均就直接训练，模型在学测井里的细节噪声。"
+        },
+        {
+          "name": "井点过拟合",
+          "why": "属性多、井少，模型把每口井的值都\"记住\"了，训练误差很小，盲井误差很大。"
+        },
+        {
+          "name": "泥质与流体混淆",
+          "why": "只用阻抗时，泥质含量和流体变化都会改变阻抗，被误读成孔隙度变化。"
+        },
+        {
+          "name": "外推区失真",
+          "why": "远离井的区域属性超出了训练范围，回归给出的值可能在物理上不可能。"
+        }
+      ]
+    },
+    "demo": {
+      "label": "可运行示范",
+      "mode": "auto",
+      "html": "demo/index.html",
+      "intro": "这是一条程序合成的孔隙度剖面，各处真实孔隙度已知，所以能精确计算有井区和外推区的误差；回归模型只用“井”位置上的样本训练。结果只用来说明方法原理和参数影响，不代表真实工区的效果。\n在合成剖面上调属性扰动与标定井数，观察有井区与外推区的误差——对应流程第 3、4 步。",
+      "height": 1080
+    }
+  }
+}

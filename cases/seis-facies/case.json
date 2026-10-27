@@ -1,0 +1,174 @@
+{
+  "id": "seis-facies",
+  "sceneId": "s2",
+  "title": "地震相智能分类",
+  "methods": [
+    "cv"
+  ],
+  "version": "1.2.0",
+  "updated": "2026-10-23",
+  "tabs": {
+    "background": {
+      "label": "专业背景",
+      "judge": [
+        {
+          "label": "任务类型",
+          "value": "图像分类 / 聚类",
+          "desc": "把反射纹理归成沉积相带"
+        },
+        {
+          "label": "数据门槛",
+          "value": "50—200 个井点标签",
+          "desc": "另需 1 万—10 万张地震切片"
+        },
+        {
+          "label": "收益",
+          "value": "2 周 → 3 天",
+          "desc": "一个层段的相带图（含井标定）"
+        },
+        {
+          "label": "难度",
+          "value": "中",
+          "desc": "标签稀疏，类别定义主观"
+        }
+      ],
+      "lede": "不同的沉积环境在地震剖面上留下不同的反射样式：平行连续、杂乱、丘状、前积。相带图回答的是储层\"可能在哪里\"，直接用于储层预测和井位优选——**把河道相画成了泛滥平原相，井就打进了泥岩**。",
+      "sections": [
+        {
+          "no": 1,
+          "en": "PROBLEM",
+          "title": "当前做法与问题",
+          "html": "<p>解释员在目的层的沿层切片上，按反射结构、连续性和振幅特征人工划分相带，再用少量井的测井相去标定每个相带的含义。</p><p>问题有三个：<b>边界靠经验</b>——同一区块，不同人划出的相带数可以相差一倍；<b>井点稀少</b>——几口井的标定要外推到整个数据体，主观性被放大；<b>不能复用</b>——换一个层段，又要从头来一遍。</p><div class=\"figure\"><svg viewBox=\"0 0 620 186\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"人工地震相划分的问题\"><rect x=\"8\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"20\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\".8\">解释员 A：3 个相带</text><polygon points=\"24.0,36 76.8,36 62.8,140 24.0,140\" fill=\"#d8c89a\"/><polygon points=\"76.8,36 129.6,36 115.6,140 62.8,140\" fill=\"#9fb19c\"/><polygon points=\"129.6,36 184.0,36 170.0,140 115.6,140\" fill=\"#b9c7d3\"/><line x1=\"76.8\" y1=\"36\" x2=\"62.8\" y2=\"140\" stroke=\"#b26a39\" stroke-width=\"1.6\"/><line x1=\"129.6\" y1=\"36\" x2=\"115.6\" y2=\"140\" stroke=\"#b26a39\" stroke-width=\"1.6\"/><circle cx=\"56.0\" cy=\"70\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><circle cx=\"112.0\" cy=\"110\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><circle cx=\"152.0\" cy=\"60\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><text x=\"20\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">边界按经验划定</text><rect x=\"214\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"226\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#41699b\" letter-spacing=\".8\">解释员 B：6 个相带</text><polygon points=\"230.0,36 257.2,36 243.2,140 230.0,140\" fill=\"#d8c89a\"/><polygon points=\"257.2,36 282.8,36 268.8,140 243.2,140\" fill=\"#9fb19c\"/><polygon points=\"282.8,36 310.0,36 296.0,140 268.8,140\" fill=\"#b9c7d3\"/><polygon points=\"310.0,36 335.6,36 321.6,140 296.0,140\" fill=\"#e4c6a8\"/><polygon points=\"335.6,36 362.8,36 348.8,140 321.6,140\" fill=\"#c9d9bf\"/><polygon points=\"362.8,36 390.0,36 376.0,140 348.8,140\" fill=\"#d3c0d9\"/><line x1=\"257.2\" y1=\"36\" x2=\"243.2\" y2=\"140\" stroke=\"#41699b\" stroke-width=\"1.6\"/><line x1=\"282.8\" y1=\"36\" x2=\"268.8\" y2=\"140\" stroke=\"#41699b\" stroke-width=\"1.6\"/><line x1=\"310.0\" y1=\"36\" x2=\"296.0\" y2=\"140\" stroke=\"#41699b\" stroke-width=\"1.6\"/><line x1=\"335.6\" y1=\"36\" x2=\"321.6\" y2=\"140\" stroke=\"#41699b\" stroke-width=\"1.6\"/><line x1=\"362.8\" y1=\"36\" x2=\"348.8\" y2=\"140\" stroke=\"#41699b\" stroke-width=\"1.6\"/><circle cx=\"262.0\" cy=\"70\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><circle cx=\"318.0\" cy=\"110\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><circle cx=\"358.0\" cy=\"60\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><text x=\"226\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">同一层段，相带数差一倍</text><rect x=\"420\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"432\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#212837\" letter-spacing=\".8\">只有 3 口井标定</text><polygon points=\"436.0,36 596.0,36 582.0,140 436.0,140\" fill=\"#d8c89a\"/><circle cx=\"468.0\" cy=\"70\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><circle cx=\"524.0\" cy=\"110\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><circle cx=\"564.0\" cy=\"60\" r=\"4\" fill=\"#212837\" stroke=\"#fff\"/><text x=\"432\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">井点稀少，外推放大主观性</text></svg></div><div class=\"figcap\"><b>图 1</b><span>左、中：同一个层段，两位解释员分别划出 3 个和 6 个相带；右：真正能标定相带含义的只有 3 口井。相带图的主观性主要来自这两点。</span></div>"
+        },
+        {
+          "no": 2,
+          "en": "INTERVENTION",
+          "title": "AI 能做什么",
+          "html": "<p>把每个位置周围的小切片当作一张图像：可以先做<b>无监督聚类</b>，看数据本身自然分成几类；也可以用井点标定的标签做<b>监督分类</b>，输出每个位置属于各相带的概率。</p><p>替换的是<b>逐片目视归类</b>这一步。地质人员仍然负责定义相带类别，并结合井资料和沉积背景给每一类赋予地质含义——聚类编号本身没有地质意义。</p><p>本案例的可运行示范展示的是<b>无监督这一半</b>：用局部振幅、频率与连续性属性做 K-means 聚类，再用独立的训练标签对齐编号；监督分类与概率体输出不在演示范围内。</p><div class=\"figure\"><svg viewBox=\"0 0 620 132\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AI 介入点流程\"><rect x=\"8\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#e6f1ec\" stroke=\"#2f7d6b\" stroke-opacity=\".28\"/><rect x=\"8\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#2f7d6b\"/><text x=\"21\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">层位与切片</text><text x=\"21\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">沿层提取</text><text x=\"21\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">小立方体</text><text x=\"105\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#2f7d6b\">01</text><path d=\"M119 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"133\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f0f0f0\" stroke=\"#41699b\" stroke-opacity=\".28\"/><rect x=\"133\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#41699b\"/><text x=\"146\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">属性提取</text><text x=\"146\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">振幅 / 频率</text><text x=\"146\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">连续性</text><text x=\"230\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#41699b\">02</text><path d=\"M244 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"258\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#eeeeee\" stroke=\"#7e5a8d\" stroke-opacity=\".28\"/><rect x=\"258\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#7e5a8d\"/><text x=\"271\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">聚类或分类</text><text x=\"271\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">K-means</text><text x=\"271\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">图像分类</text><text x=\"355\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#7e5a8d\">03</text><path d=\"M369 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"383\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f8ecdf\" stroke=\"#b26a39\" stroke-opacity=\".28\"/><rect x=\"383\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#b26a39\"/><text x=\"396\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">井点标定</text><text x=\"396\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">测井相</text><text x=\"396\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">赋予含义</text><text x=\"480\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#b26a39\">04</text><path d=\"M494 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"508\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f1f1dd\" stroke=\"#767a2e\" stroke-opacity=\".28\"/><rect x=\"508\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#767a2e\"/><text x=\"521\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">相带图</text><text x=\"521\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">人工审核边界</text><text x=\"605\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#767a2e\">05</text><text x=\"8\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#505050\" letter-spacing=\"1\">ALGORITHM</text><text x=\"383\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\"1\">HUMAN CORE</text><line x1=\"8\" y1=\"112\" x2=\"366\" y2=\"112\" stroke=\"#2f7d6b\" stroke-width=\"1.4\"/><text x=\"187\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#2f7d6b\">算法负责把纹理相似的位置归成一类</text><line x1=\"383\" y1=\"112\" x2=\"616\" y2=\"112\" stroke=\"#b26a39\" stroke-width=\"1.4\"/><text x=\"499\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#b26a39\">人负责赋予地质含义</text></svg></div><div class=\"figcap\"><b>图 2</b><span>从地震切片到相带图的五步。第 1 步的层位决定每张切片是否来自同一个地质时间面；第 4 步把&quot;纹理分组&quot;变成&quot;沉积相带&quot;——没有这一步，聚类结果只是一张彩色图。</span></div>"
+        },
+        {
+          "no": 3,
+          "en": "DATA",
+          "title": "你需要准备什么",
+          "html": "<p style=\"margin-bottom:14px\">立项前先对着这张清单打勾。<b>勾不满不代表不能做</b>，但每一项空缺都会在后期变成返工。清单可点击，勾选状态只在本页有效。</p><div class=\"checklist\"><div class=\"cl-head\"><span>数据准备清单 · 5 项</span><span class=\"cl-prog\"><span id=\"cl-txt\">0 / 5</span><span class=\"cl-bar\"><i id=\"cl-fill\"></i></span></span></div><div class=\"cl-item\" data-cl=\"0\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">地震切片 / 小立方体</span><span class=\"cl-s\">单区块 1 万—10 万片</span></span><span class=\"cl-n\">井点标定的相带标签 50—200 个</span></div><div class=\"cl-item\" data-cl=\"1\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">测井相解释</span><span class=\"cl-s\">井点岩性与沉积相</span></span><span class=\"cl-n\">作为标签来源</span></div><div class=\"cl-item\" data-cl=\"2\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">沉积背景资料</span><span class=\"cl-s\">岩心、露头类比</span></span><span class=\"cl-n\">定性参考</span></div><div class=\"cl-item\" data-cl=\"3\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">目的层层位解释</span><span class=\"cl-s\">顶、底层位</span></span><span class=\"cl-n\">沿层切片的前提</span></div><div class=\"cl-item\" data-cl=\"4\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">区域沉积模式</span><span class=\"cl-s\">物源方向、古地貌</span></span><span class=\"cl-n\">判断相带组合是否合理</span></div></div>"
+        },
+        {
+          "no": 4,
+          "en": "DIFFICULTY",
+          "title": "技术难度与参考方向",
+          "html": "<div style=\"display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:2px\"><span class=\"dtag\" data-d=\"中\">难度 中</span><span class=\"small muted\">标签来自稀疏井点，需弱监督或半监督；相带类别定义本身存在主观性。</span></div><div class=\"meter\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"\"></i></div><p>难度按三档标注：<b>低</b> = 数据现成、任务边界清晰、错了代价小；<b>中</b> = 需要一个月量级的标注与清洗，效果依赖后处理规则；<b>高</b> = 标签稀缺或安全约束硬，通常要先做小范围可行性验证再立项。</p><p style=\"margin-top:18px\"><span class=\"kicker plain\" style=\"color:var(--ink-4)\">可借鉴的通用技术</span></p><div class=\"refs\"><a class=\"ref\" href=\"#/method/cv\">图像分类<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/cv\">弱监督学习<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/cv\">地震属性组合<span class=\"ar\">↗</span></a></div><p style=\"margin-top:18px\" class=\"small muted\">交叉环节：<a href=\"#/stage/welllog\" style=\"color:var(--jade-d);font-weight:600\">测井</a></p>"
+        }
+      ]
+    },
+    "workflow": {
+      "label": "案例流程",
+      "title": "案例：G 凹陷目的层段的地震相划分",
+      "lead": [
+        "G 凹陷三维数据体 350 km²，目的层为一套三角洲—湖泊沉积，区内 32 口井有测井相解释。过去一个层段的相带图需要两周。目标是**一个层段的相带图压缩到三天，在不参与训练的 8 口盲井上相带符合率 ≥ 80%**。",
+        "下面五步是这个案例的落地流程。注意第 1 步和第 2 步：它们不涉及模型本身，却决定了结果能不能用。"
+      ],
+      "stats": [
+        [
+          "数据体",
+          "350 km²"
+        ],
+        [
+          "训练井",
+          "24 口"
+        ],
+        [
+          "盲井",
+          "8 口"
+        ],
+        [
+          "相带类别",
+          "5 类"
+        ],
+        [
+          "人工周期",
+          "2 周 / 层段"
+        ],
+        [
+          "辅助后周期",
+          "3 天 / 层段"
+        ]
+      ],
+      "steps": [
+        {
+          "name": "层位与切片准备",
+          "role": "工程环节",
+          "do": "追踪目的层顶底，沿层提取切片和小立方体；层位不准的区域先修正。",
+          "effect": "每个样本都来自同一个地质时间面",
+          "trap": "层位穿时，一张切片里混进了上下不同层段的反射",
+          "fig": "<img src=\"assets/steps/seis-facies/s1.svg\" alt=\"层位与切片准备示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "同一条楔形地层剖面：沿顶底层位按比例取切片，全部样点都在目的层内；取等时切片时，一部分样点落到上下层段。"
+        },
+        {
+          "name": "定义相带类别",
+          "role": "工程环节",
+          "do": "地质人员先确定 5 类相带的定义和典型剖面，井点按测井相赋标签，**预先留出 8 口盲井**。",
+          "effect": "类别有统一的口径",
+          "trap": "\"过渡相\"这类模糊类别，模型和人都分不清",
+          "fig": "<img src=\"assets/steps/seis-facies/s2.svg\" alt=\"定义相带类别示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：先给 5 类相带配上典型剖面和井点；右：“过渡相”的特征夹在两类之间，模型和人都很难分开。"
+        },
+        {
+          "name": "聚类与分类",
+          "role": "算法核心",
+          "do": "先做无监督聚类，看数据自然分成几类；再用井点标签训练分类器，输出相带概率。",
+          "effect": "既看到数据本身的结构，又对齐到地质类别",
+          "trap": "把聚类编号直接当成相带用",
+          "fig": "<img src=\"assets/steps/seis-facies/s3.svg\" alt=\"聚类与分类示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：无监督聚类先看数据自然分成几组；右：同一份数据换个随机种子再跑一次，簇编号对应的相带就变了，编号本身没有地质含义。"
+        },
+        {
+          "name": "井点标定与边界平滑",
+          "role": "效果关键",
+          "do": "用井点给每一类标定含义；按沉积模式检查相带组合，去除零碎斑块。",
+          "effect": "从\"纹理分组\"变成\"沉积相带\"",
+          "trap": "只用 1—2 口井标定一整类，偶然性很大",
+          "fig": "<img src=\"assets/steps/seis-facies/s4.svg\" alt=\"井点标定与边界平滑示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左、中：分类结果去碎斑并用井点赋予地质含义；右：每口井与所属类别相符的概率为 70% 时，只用 1—2 口井标定，有约三成概率标错。"
+        },
+        {
+          "name": "盲井验证与回流",
+          "role": "闭环",
+          "do": "在 8 口盲井上检查相带符合率；修正后的相带图和新钻井结果回流。",
+          "effect": "每口新井都在检验和修正相带图",
+          "trap": "训练井也拿来算符合率，结果虚高",
+          "fig": "<img src=\"assets/steps/seis-facies/s5.svg\" alt=\"盲井验证与回流示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：8 口盲井预先留出，不参与训练；右：训练井上的符合率接近满分，盲井上的才是真实水平。"
+        }
+      ],
+      "metrics": {
+        "title": "怎么算\"划对了\"",
+        "html": "<p>相带图没有逐像素的真值，只有井点。评价以<b>盲井</b>为准：在不参与训练的井上，预测相带与测井相是否一致；同时要检查相带图在地质上是否合理——相带组合、展布方向是否符合沉积模式。</p><div class=\"figure\"><svg viewBox=\"0 0 620 186\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"地震相划分的评价方式\"><rect x=\"8\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"20\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#2f7d6b\" letter-spacing=\".8\">盲井符合</text><rect x=\"24\" y=\"36\" width=\"160\" height=\"104\" fill=\"#e8ede4\"/><circle cx=\"145.1\" cy=\"115.0\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"101.9\" cy=\"68.0\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"34.1\" cy=\"101.7\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"99.8\" cy=\"109.8\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"86.2\" cy=\"110.7\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"72.2\" cy=\"113.4\" r=\"5\" fill=\"#2f7d6b\"/><text x=\"20\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">不参与训练的井上相带一致</text><rect x=\"214\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"226\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b05a51\" letter-spacing=\".8\">盲井不符</text><rect x=\"230\" y=\"36\" width=\"160\" height=\"104\" fill=\"#e8ede4\"/><circle cx=\"351.1\" cy=\"115.0\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"307.9\" cy=\"68.0\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"240.1\" cy=\"101.7\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"305.8\" cy=\"109.8\" r=\"5\" fill=\"#2f7d6b\"/><circle cx=\"292.2\" cy=\"110.7\" r=\"5\" fill=\"#b05a51\"/><circle cx=\"278.2\" cy=\"113.4\" r=\"5\" fill=\"#b05a51\"/><text x=\"226\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">不符的井要回看相带定义</text><rect x=\"420\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"432\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#505050\" letter-spacing=\".8\">训练井不能验证</text><rect x=\"436\" y=\"36\" width=\"160\" height=\"104\" fill=\"#e8ede4\"/><circle cx=\"557.1\" cy=\"115.0\" r=\"5\" fill=\"#c9c2b0\"/><path d=\"M553.1 111.0l8 8M561.1 111.0l-8 8\" stroke=\"#b05a51\" stroke-width=\"1.4\"/><circle cx=\"513.9\" cy=\"68.0\" r=\"5\" fill=\"#c9c2b0\"/><path d=\"M509.9 64.0l8 8M517.9 64.0l-8 8\" stroke=\"#b05a51\" stroke-width=\"1.4\"/><circle cx=\"446.1\" cy=\"101.7\" r=\"5\" fill=\"#c9c2b0\"/><path d=\"M442.1 97.7l8 8M450.1 97.7l-8 8\" stroke=\"#b05a51\" stroke-width=\"1.4\"/><circle cx=\"511.8\" cy=\"109.8\" r=\"5\" fill=\"#c9c2b0\"/><path d=\"M507.8 105.8l8 8M515.8 105.8l-8 8\" stroke=\"#b05a51\" stroke-width=\"1.4\"/><circle cx=\"498.2\" cy=\"110.7\" r=\"5\" fill=\"#c9c2b0\"/><path d=\"M494.2 106.7l8 8M502.2 106.7l-8 8\" stroke=\"#b05a51\" stroke-width=\"1.4\"/><circle cx=\"484.2\" cy=\"113.4\" r=\"5\" fill=\"#c9c2b0\"/><path d=\"M480.2 109.4l8 8M488.2 109.4l-8 8\" stroke=\"#b05a51\" stroke-width=\"1.4\"/><text x=\"432\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">用训练井算符合率会虚高</text></svg></div><div class=\"figcap\"><b>图 3</b><span>左：盲井上预测相带与测井相一致（绿）；中：不一致的盲井（红）要回头检查相带定义和标定；右：训练井参与了建模，不能用来算符合率。</span></div><table class=\"dtable\"><thead><tr><th>指标</th><th>定义</th><th>验收目标</th></tr></thead><tbody><tr><td>盲井相带符合率</td><td>不参与训练的井上，预测相带与测井相一致的比例</td><td>≥ 80%</td></tr><tr><td>类别召回率</td><td>每类相带在盲井上被正确识别的比例（取最低的一类）</td><td>≥ 0.6</td></tr><tr><td>相带破碎度</td><td>面积小于 0.5 km² 的孤立斑块数</td><td>越少越好，单独报告</td></tr><tr><td>人工修改比例</td><td>审核时被修改的相带面积</td><td>≤ 20%</td></tr></tbody></table><p>可运行示范中的指标由页面在合成数据上实时计算，用来理解方法的行为，不代表真实工区效果。</p>"
+      },
+      "fails": [
+        {
+          "name": "层位穿时",
+          "why": "层位追踪不准，沿层切片跨越了不同的地质时间面，纹理差异其实来自不同层段。"
+        },
+        {
+          "name": "把聚类编号当相带",
+          "why": "聚类只说明\"这些地方纹理相似\"，不说明它是什么相，必须经井点和沉积背景标定。"
+        },
+        {
+          "name": "标定井太少",
+          "why": "一整类相带只有一两口井标定，标定结果的偶然性很大，换一口井结论就变。"
+        },
+        {
+          "name": "类别定义主观",
+          "why": "相带类别本身定义不清（比如\"过渡相\"），再好的模型也只能学到这种模糊。"
+        }
+      ]
+    },
+    "demo": {
+      "label": "可运行示范",
+      "mode": "auto",
+      "html": "demo/index.html",
+      "intro": "这是一组程序合成的地震属性样本，每个样本的真实相带已知，所以能用混淆矩阵精确评价；先用 k-means 聚类，再把簇对应到相带。结果只用来说明方法原理和参数影响，不代表真实工区的效果。\n在合成剖面上调属性扰动与边界模糊度，观察聚类相带与混淆矩阵——对应流程第 3 步。",
+      "height": 1080
+    }
+  }
+}

@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+qa/
+node_modules/
+.DS_Store
+.workbuddy/
+.codex/

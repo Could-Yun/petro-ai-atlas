@@ -1,0 +1,174 @@
+{
+  "id": "geo-spectral",
+  "sceneId": "g1",
+  "title": "地质剖面遥感解译",
+  "methods": [
+    "cv"
+  ],
+  "version": "1.2.0",
+  "updated": "2026-10-23",
+  "tabs": {
+    "background": {
+      "label": "专业背景",
+      "judge": [
+        {
+          "label": "任务类型",
+          "value": "语义分割",
+          "desc": "逐像素判别岩性，再提取界线"
+        },
+        {
+          "label": "数据门槛",
+          "value": "≥ 20 幅精修样区",
+          "desc": "另有同区历史地质图作弱标签"
+        },
+        {
+          "label": "收益",
+          "value": "2 周 → 3 天",
+          "desc": "1:5 万图幅解译初稿（含人工修编）"
+        },
+        {
+          "label": "难度",
+          "value": "中",
+          "desc": "地质标签稀缺，跨气候区迁移差"
+        }
+      ],
+      "lede": "区域地质调查从遥感影像开始：不同岩性在各波段的反射率不同，断层和褶皱在影像上表现为线性纹理。解译图是后续化探布点、物探部署的底图——**界线画偏几百米，后面的工作区就跟着偏**。",
+      "sections": [
+        {
+          "no": 1,
+          "en": "PROBLEM",
+          "title": "当前做法与问题",
+          "html": "<p>解释员把多光谱影像做成假彩色合成图，凭色调、纹理和地貌勾绘岩性界线与构造线。一幅 1:5 万图幅的目视解译需要一到两周。</p><p>问题有三个：<b>界线因人而异</b>，同一景影像不同解释员勾绘的界线可相差上百米；<b>覆盖区容易漏判</b>，植被和风化层下的岩性与构造信噪比很低；<b>成果难以复用</b>，人工成果是线划图，没有逐像素的岩性属性，不能直接入库做空间分析。</p><div class=\"figure\"><svg viewBox=\"0 0 620 186\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"人工遥感解译的典型问题\"><rect x=\"8\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"20\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\".8\">界线因人而异</text><rect x=\"22\" y=\"34\" width=\"164\" height=\"112\" fill=\"#d8c89a\"/><polygon points=\"22.0,97.0 30.0,100.0 38.0,101.7 46.0,101.9 54.0,100.5 62.0,97.8 70.0,94.0 78.0,89.5 86.0,84.9 94.0,80.6 102.0,77.1 110.0,74.8 118.0,74.0 126.0,74.7 134.0,76.9 142.0,80.3 150.0,84.5 158.0,89.2 166.0,93.7 174.0,97.5 182.0,100.4 186,146 22,146\" fill=\"#9fb19c\"/><polygon points=\"22.0,136.0 30.0,135.3 38.0,133.2 46.0,129.8 54.0,125.6 62.0,120.9 70.0,116.4 78.0,112.5 86.0,109.7 94.0,108.2 102.0,108.2 110.0,109.7 118.0,112.6 126.0,116.6 134.0,121.1 142.0,125.7 150.0,129.9 158.0,133.3 166.0,135.4 174.0,136.0 182.0,135.1 186,146 22,146\" fill=\"#b9b0a6\"/><polyline points=\"22.0,89.3 30.0,92.8 38.0,95.1 46.0,96.0 54.0,95.3 62.0,93.2 70.0,89.8 78.0,85.6 86.0,80.9 94.0,76.4 102.0,72.5 110.0,69.7 118.0,68.2 126.0,68.2 134.0,69.7 142.0,72.6 150.0,76.6 158.0,81.1 166.0,85.7 174.0,89.9 182.0,93.3\" fill=\"none\" stroke=\"#b26a39\" stroke-width=\"1.8\"/><polyline points=\"22.0,107.0 30.0,109.2 38.0,110.0 46.0,109.2 54.0,107.0 62.0,103.6 70.0,99.3 78.0,94.7 86.0,90.2 94.0,86.4 102.0,83.6 110.0,82.1 118.0,82.2 126.0,83.9 134.0,86.8 142.0,90.8 150.0,95.3 158.0,99.9 166.0,104.1 174.0,107.4 182.0,109.4\" fill=\"none\" stroke=\"#41699b\" stroke-width=\"1.8\" stroke-dasharray=\"6 4\"/><text x=\"28.0\" y=\"48.0\" font-size=\"9\" fill=\"#b26a39\" text-anchor=\"start\">解释员 A</text><text x=\"180.0\" y=\"48.0\" font-size=\"9\" fill=\"#41699b\" text-anchor=\"end\">解释员 B</text><text x=\"20\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">同一影像，界线可相差上百米</text><rect x=\"214\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"226\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b05a51\" letter-spacing=\".8\">覆盖区漏判</text><rect x=\"228\" y=\"34\" width=\"164\" height=\"112\" fill=\"#d8c89a\"/><path d=\"M274 34 L334 146\" stroke=\"#212837\" stroke-width=\"2\"/><rect x=\"284\" y=\"70\" width=\"80\" height=\"56\" rx=\"10\" fill=\"#7f9566\" opacity=\".85\"/><circle cx=\"305.1\" cy=\"100.1\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"314.6\" cy=\"103.0\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"333.1\" cy=\"77.1\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"288.9\" cy=\"114.2\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"306.7\" cy=\"85.2\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"359.7\" cy=\"96.6\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"348.2\" cy=\"96.9\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"334.0\" cy=\"81.2\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"333.7\" cy=\"115.7\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"325.7\" cy=\"109.6\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"336.3\" cy=\"77.1\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"342.6\" cy=\"102.4\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"309.7\" cy=\"75.5\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"350.3\" cy=\"96.7\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"339.8\" cy=\"116.2\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"339.4\" cy=\"118.2\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"316.4\" cy=\"112.4\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"320.0\" cy=\"118.9\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"351.3\" cy=\"78.7\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"297.8\" cy=\"84.4\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"357.5\" cy=\"94.9\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"333.1\" cy=\"88.4\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"324.5\" cy=\"92.5\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"313.3\" cy=\"102.1\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"330.1\" cy=\"117.4\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"337.1\" cy=\"118.6\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"349.7\" cy=\"121.6\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"336.3\" cy=\"81.8\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"350.0\" cy=\"120.3\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"353.1\" cy=\"101.3\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"339.4\" cy=\"84.1\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"347.9\" cy=\"101.5\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"308.5\" cy=\"77.0\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"349.5\" cy=\"121.5\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"294.4\" cy=\"112.4\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"317.6\" cy=\"81.2\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"309.2\" cy=\"110.9\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"350.8\" cy=\"76.1\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"332.2\" cy=\"76.2\" r=\"2\" fill=\"#5f7a4a\"/><circle cx=\"339.7\" cy=\"89.9\" r=\"2\" fill=\"#5f7a4a\"/><path d=\"M298 70 L314 126\" stroke=\"#b05a51\" stroke-width=\"2\" stroke-dasharray=\"3 3\"/><text x=\"324.0\" y=\"64.0\" font-size=\"9\" fill=\"#5f7a4a\" text-anchor=\"start\">植被覆盖</text><text x=\"226\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">植被下的断层被漏掉</text><rect x=\"420\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"432\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#505050\" letter-spacing=\".8\">成果难入库</text><rect x=\"434\" y=\"34\" width=\"164\" height=\"112\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><line x1=\"444\" y1=\"50\" x2=\"588\" y2=\"46\" stroke=\"#b26a39\"/><line x1=\"444\" y1=\"70\" x2=\"588\" y2=\"74\" stroke=\"#b26a39\"/><line x1=\"444\" y1=\"90\" x2=\"588\" y2=\"86\" stroke=\"#b26a39\"/><line x1=\"444\" y1=\"110\" x2=\"588\" y2=\"114\" stroke=\"#b26a39\"/><line x1=\"444\" y1=\"130\" x2=\"588\" y2=\"126\" stroke=\"#b26a39\"/><text x=\"516.0\" y=\"142.0\" font-size=\"9\" fill=\"#b26a39\" text-anchor=\"middle\">线划图 · 无属性、不能叠加</text><text x=\"432\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">只有线条，没有岩性属性</text></svg></div><div class=\"figcap\"><b>图 1</b><span>左：两位解释员对同一条岩性界线的勾绘相差明显；中：植被覆盖区里的断层被漏掉；右：人工成果只有线条。这些是&quot;目视勾绘&quot;的固有代价，也是算法要替代的部分。</span></div>"
+        },
+        {
+          "no": 2,
+          "en": "INTERVENTION",
+          "title": "AI 能做什么",
+          "html": "<p>把解译建模成<b>语义分割</b>：多光谱波段加上 DEM 坡度作为输入，逐像素输出岩性类别和置信度；构造线用线性目标分割单独提取。分割结果经平滑和矢量化，成为带属性、可入库的图层。</p><p>替换的是<b>逐片目视勾绘</b>这一步。解释员负责选样区、精修标签，以及检查岩性接触关系和构造样式是否合理——算法给出初稿，地质判断仍在人手里。</p><p>本案例的可运行示范只覆盖<b>逐像素岩性判别</b>：在合成三波段影像上训练一个小型多层感知机做像素分类，并把低置信度像素留给解释员；构造线提取和矢量化不在演示范围内。</p><div class=\"figure\"><svg viewBox=\"0 0 620 132\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"AI 介入点流程\"><rect x=\"8\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#e6f1ec\" stroke=\"#2f7d6b\" stroke-opacity=\".28\"/><rect x=\"8\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#2f7d6b\"/><text x=\"21\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">影像预处理</text><text x=\"21\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">辐射校正</text><text x=\"21\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">云与植被掩膜</text><text x=\"105\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#2f7d6b\">01</text><path d=\"M119 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"133\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f0f0f0\" stroke=\"#41699b\" stroke-opacity=\".28\"/><rect x=\"133\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#41699b\"/><text x=\"146\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">多源特征</text><text x=\"146\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">多光谱波段</text><text x=\"146\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">DEM 坡度</text><text x=\"230\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#41699b\">02</text><path d=\"M244 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"258\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#eeeeee\" stroke=\"#7e5a8d\" stroke-opacity=\".28\"/><rect x=\"258\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#7e5a8d\"/><text x=\"271\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">分割网络</text><text x=\"271\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">岩性概率图</text><text x=\"271\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">线性构造</text><text x=\"355\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#7e5a8d\">03</text><path d=\"M369 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"383\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f8ecdf\" stroke=\"#b26a39\" stroke-opacity=\".28\"/><rect x=\"383\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#b26a39\"/><text x=\"396\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">矢量化检查</text><text x=\"396\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">平滑去碎斑</text><text x=\"396\" y=\"83\" font-size=\"9\" fill=\"#4c4c4c\">接触关系</text><text x=\"480\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#b26a39\">04</text><path d=\"M494 62h9m-3.5-3.4 3.6 3.4-3.6 3.4\" stroke=\"#c9c2b0\" stroke-width=\"1.2\" fill=\"none\" stroke-linecap=\"round\"/><rect x=\"508\" y=\"26\" width=\"108\" height=\"72\" rx=\"8\" fill=\"#f1f1dd\" stroke=\"#767a2e\" stroke-opacity=\".28\"/><rect x=\"508\" y=\"26\" width=\"3\" height=\"72\" rx=\"1.5\" fill=\"#767a2e\"/><text x=\"521\" y=\"49\" font-size=\"11.5\" font-weight=\"600\" fill=\"#212837\">解译图层</text><text x=\"521\" y=\"69\" font-size=\"9\" fill=\"#4c4c4c\">人工修编入库</text><text x=\"605\" y=\"92\" text-anchor=\"end\" font-size=\"8.5\" font-family=\"monospace\" fill=\"#767a2e\">05</text><text x=\"8\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#505050\" letter-spacing=\"1\">ALGORITHM</text><text x=\"383\" y=\"16\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\"1\">HUMAN CORE</text><line x1=\"8\" y1=\"112\" x2=\"366\" y2=\"112\" stroke=\"#2f7d6b\" stroke-width=\"1.4\"/><text x=\"187\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#2f7d6b\">算法负责逐像素判别，给出解译初稿</text><line x1=\"383\" y1=\"112\" x2=\"616\" y2=\"112\" stroke=\"#b26a39\" stroke-width=\"1.4\"/><text x=\"499\" y=\"126\" text-anchor=\"middle\" font-size=\"9.5\" fill=\"#b26a39\">人负责接触关系与修编</text></svg></div><div class=\"figcap\"><b>图 2</b><span>从原始影像到解译图层的五步。第 1 步的掩膜决定模型&quot;在哪里可以下结论&quot;——云、阴影、浓密植被区必须单独标成不可解译；第 4 步决定像素图能不能变成地质上讲得通的界线。</span></div>"
+        },
+        {
+          "no": 3,
+          "en": "DATA",
+          "title": "你需要准备什么",
+          "html": "<p style=\"margin-bottom:14px\">立项前先对着这张清单打勾。<b>勾不满不代表不能做</b>，但每一项空缺都会在后期变成返工。清单可点击，勾选状态只在本页有效。</p><div class=\"checklist\"><div class=\"cl-head\"><span>数据准备清单 · 5 项</span><span class=\"cl-prog\"><span id=\"cl-txt\">0 / 5</span><span class=\"cl-bar\"><i id=\"cl-fill\"></i></span></span></div><div class=\"cl-item\" data-cl=\"0\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">多光谱 / 高光谱影像</span><span class=\"cl-s\">单幅千万像素级，覆盖整个图幅</span></span><span class=\"cl-n\">人工精修的岩性掩膜 ≥ 20 幅</span></div><div class=\"cl-item\" data-cl=\"1\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">历史地质图（弱标签）</span><span class=\"cl-s\">与影像同区域、已矢量化</span></span><span class=\"cl-n\">可投影转为训练标签，仅用于预训练</span></div><div class=\"cl-item\" data-cl=\"2\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">DEM 高程与坡度</span><span class=\"cl-s\">与影像同分辨率</span></span><span class=\"cl-n\">无需标注</span></div><div class=\"cl-item\" data-cl=\"3\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">野外路线观察点</span><span class=\"cl-s\">图幅内 50—100 个</span></span><span class=\"cl-n\">作为独立验证集</span></div><div class=\"cl-item\" data-cl=\"4\"><span class=\"cl-box\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12.5l5 5L20 6.5\"/></svg></span><span><span class=\"cl-t\">云量与植被指数掩膜</span><span class=\"cl-s\">与影像同期</span></span><span class=\"cl-n\">排除不可解译区</span></div></div><p style=\"margin-top:18px\"><span class=\"kicker plain\" style=\"color:var(--ink-4)\">可参考的公开数据集</span></p><div class=\"refs\"><span class=\"ref\">Sentinel-2 / Landsat-8 公开影像</span><span class=\"ref\">USGS 光谱库</span></div>"
+        },
+        {
+          "no": 4,
+          "en": "DIFFICULTY",
+          "title": "技术难度与参考方向",
+          "html": "<div style=\"display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:2px\"><span class=\"dtag\" data-d=\"中\">难度 中</span><span class=\"small muted\">公开影像充足，但地质标签稀缺，跨气候区、跨岩性组合的迁移能力差。</span></div><div class=\"meter\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"\"></i></div><p>难度按三档标注：<b>低</b> = 数据现成、任务边界清晰、错了代价小；<b>中</b> = 需要一个月量级的标注与清洗，效果依赖后处理规则；<b>高</b> = 标签稀缺或安全约束硬，通常要先做小范围可行性验证再立项。</p><p style=\"margin-top:18px\"><span class=\"kicker plain\" style=\"color:var(--ink-4)\">可借鉴的通用技术</span></p><div class=\"refs\"><a class=\"ref\" href=\"#/method/cv\">语义分割<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/cv\">弱监督学习<span class=\"ar\">↗</span></a><a class=\"ref\" href=\"#/method/cv\">多光谱特征融合<span class=\"ar\">↗</span></a></div><p style=\"margin-top:18px\" class=\"small muted\">交叉环节：<a href=\"#/stage/seismic\" style=\"color:var(--jade-d);font-weight:600\">物探</a></p>"
+        }
+      ]
+    },
+    "workflow": {
+      "label": "案例流程",
+      "title": "案例：C 区 1:5 万图幅的岩性遥感解译",
+      "lead": [
+        "C 区是一个新区块，地表以干旱—半干旱基岩出露为主，局部被灌木覆盖。解译组过去完成一幅 1:5 万图幅需要两周。目标不是\"训练出一个分割网络\"，而是**把解译初稿压缩到三天，岩性与野外观察点的符合率 ≥ 85%**。",
+        "下面五步是这个案例的落地流程。注意第 1 步和第 4 步：它们不涉及模型本身，却决定了结果能不能用。"
+      ],
+      "stats": [
+        [
+          "图幅面积",
+          "约 450 km²"
+        ],
+        [
+          "影像",
+          "Sentinel-2 · 10 m"
+        ],
+        [
+          "精修样区",
+          "20 幅"
+        ],
+        [
+          "野外观察点",
+          "80 个"
+        ],
+        [
+          "人工周期",
+          "2 周 / 幅"
+        ],
+        [
+          "辅助后周期",
+          "3 天 / 幅"
+        ]
+      ],
+      "steps": [
+        {
+          "name": "影像预处理与掩膜",
+          "role": "工程环节",
+          "do": "辐射校正、拼接，按同一季相选景；把云、阴影和浓密植被区单独掩膜，标成\"不可解译\"。",
+          "effect": "模型只在能看到岩石的地方下结论",
+          "trap": "不同季相的影像拼在一起，同一种岩性会被分成两类",
+          "fig": "<img src=\"assets/steps/geo-spectral/s1.svg\" alt=\"影像预处理与掩膜示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：同一种砂岩，秋季影像的光谱反而更接近春季的泥岩；右：选同一季相的影像，并把云、阴影、浓密植被单独掩膜。"
+        },
+        {
+          "name": "样区标注与弱标签",
+          "role": "工程环节",
+          "do": "解释员在 20 个代表性样区精修岩性掩膜；全图幅的历史地质图投影后作为弱标签，**只用于预训练**。",
+          "effect": "少量精标 + 大量弱标签",
+          "trap": "历史图的界线精度只有几百米，直接当真值会把老图的错误学进去",
+          "fig": "<img src=\"assets/steps/geo-spectral/s2.svg\" alt=\"样区标注与弱标签示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：历史地质图只作弱标签，20 个样区精修标注；右：历史图的界线与真实界线中位偏差约 200 米，直接当真值会把老图的错误学进去。"
+        },
+        {
+          "name": "岩性分割预测",
+          "role": "算法核心",
+          "do": "多光谱波段与 DEM 坡度一起输入分割网络，逐像素输出岩性概率，低置信度像素单独标出。",
+          "effect": "每个像素都有类别和置信度",
+          "trap": "只用光谱不用地貌，阴坡和阳坡上的同一岩性会被分开",
+          "fig": "<img src=\"assets/steps/geo-spectral/s3.svg\" alt=\"岩性分割预测示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "同一座山的模拟影像。左：只用光谱，阴坡的砂岩因为暗被分成泥岩；右：加入 DEM 坡度坡向做地形校正后，阴阳坡归为同一岩性。"
+        },
+        {
+          "name": "矢量化与规则检查",
+          "role": "效果关键",
+          "do": "概率图平滑、去除小斑块后转为矢量；按地层顺序和岩性接触关系检查不合理的相邻关系。",
+          "effect": "把\"像素图\"变成可入库的\"界线\"",
+          "trap": "平滑过度会抹掉窄条状的岩脉和断层破碎带",
+          "fig": "<img src=\"assets/steps/geo-spectral/s4.svg\" alt=\"矢量化与规则检查示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "同一张逐像素结果：3×3 去碎斑能保留窄条状岩脉，11×11 平滑过度会把岩脉整条抹掉。"
+        },
+        {
+          "name": "人工修编与野外验证",
+          "role": "闭环",
+          "do": "解释员修编低置信度区与规则报警区，用野外观察点验证；修编结果回流为下一幅图的标签。",
+          "effect": "每做完一幅，下一幅的标签就多一批",
+          "trap": "只看总体精度，小面积岩性的系统性错误会被掩盖",
+          "fig": "<img src=\"assets/steps/geo-spectral/s5.svg\" alt=\"人工修编与野外验证示意图\" loading=\"lazy\" width=\"432\" height=\"205\">",
+          "figcap": "左：用野外观察点验证，不一致的点集中在小面积岩性上；右：总体精度很高，但面积小的火山岩和岩脉正确率明显偏低。"
+        }
+      ],
+      "metrics": {
+        "title": "怎么算\"解译对了\"",
+        "html": "<p>不能只看逐像素的总体精度：大面积岩性占主导，一个小面积但关键的岩性（比如指示油气的蚀变带）几乎全错，总体精度依然可以很高。评价要<b>按类别统计</b>，并用<b>野外观察点</b>做独立验证，再看<b>界线位置</b>偏差。</p><div class=\"figure\"><svg viewBox=\"0 0 620 186\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"遥感解译的评价方式\"><rect x=\"8\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"20\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#2f7d6b\" letter-spacing=\".8\">按类别看精度</text><rect x=\"60\" y=\"36\" width=\"40\" height=\"30\" fill=\"#2f7d6b\" opacity=\"0.96\"/><text x=\"80.0\" y=\"55.0\" font-size=\"8.5\" fill=\"#fff\" text-anchor=\"middle\">95%</text><rect x=\"102\" y=\"36\" width=\"40\" height=\"30\" fill=\"#b26a39\" opacity=\"0.18\"/><text x=\"122.0\" y=\"55.0\" font-size=\"8.5\" fill=\"#212837\" text-anchor=\"middle\">4%</text><rect x=\"144\" y=\"36\" width=\"40\" height=\"30\" fill=\"#b26a39\" opacity=\"0.16\"/><text x=\"164.0\" y=\"55.0\" font-size=\"8.5\" fill=\"#212837\" text-anchor=\"middle\">1%</text><text x=\"54.0\" y=\"55.0\" font-size=\"9\" fill=\"#212837\" text-anchor=\"end\">砂岩</text><rect x=\"60\" y=\"68\" width=\"40\" height=\"30\" fill=\"#b26a39\" opacity=\"0.20\"/><text x=\"80.0\" y=\"87.0\" font-size=\"8.5\" fill=\"#212837\" text-anchor=\"middle\">6%</text><rect x=\"102\" y=\"68\" width=\"40\" height=\"30\" fill=\"#2f7d6b\" opacity=\"0.93\"/><text x=\"122.0\" y=\"87.0\" font-size=\"8.5\" fill=\"#fff\" text-anchor=\"middle\">92%</text><rect x=\"144\" y=\"68\" width=\"40\" height=\"30\" fill=\"#b26a39\" opacity=\"0.17\"/><text x=\"164.0\" y=\"87.0\" font-size=\"8.5\" fill=\"#212837\" text-anchor=\"middle\">2%</text><text x=\"54.0\" y=\"87.0\" font-size=\"9\" fill=\"#212837\" text-anchor=\"end\">页岩</text><rect x=\"60\" y=\"100\" width=\"40\" height=\"30\" fill=\"#b26a39\" opacity=\"0.62\"/><text x=\"80.0\" y=\"119.0\" font-size=\"8.5\" fill=\"#fff\" text-anchor=\"middle\">55%</text><rect x=\"102\" y=\"100\" width=\"40\" height=\"30\" fill=\"#b26a39\" opacity=\"0.45\"/><text x=\"122.0\" y=\"119.0\" font-size=\"8.5\" fill=\"#212837\" text-anchor=\"middle\">35%</text><rect x=\"144\" y=\"100\" width=\"40\" height=\"30\" fill=\"#2f7d6b\" opacity=\"0.23\"/><text x=\"164.0\" y=\"119.0\" font-size=\"8.5\" fill=\"#212837\" text-anchor=\"middle\">10%</text><text x=\"54.0\" y=\"119.0\" font-size=\"9\" fill=\"#212837\" text-anchor=\"end\">蚀变</text><text x=\"20\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">总体精度高，小类&quot;蚀变&quot;仍可能大面积错</text><rect x=\"214\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"226\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#2f7d6b\" letter-spacing=\".8\">野外观察点核对</text><rect x=\"228\" y=\"34\" width=\"164\" height=\"108\" fill=\"#d8c89a\" opacity=\".5\"/><circle cx=\"327.7\" cy=\"110.8\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"352.5\" cy=\"128.8\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"344.5\" cy=\"127.0\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"242.2\" cy=\"85.9\" r=\"4\" fill=\"#b05a51\"/><circle cx=\"373.8\" cy=\"102.4\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"367.7\" cy=\"54.2\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"305.5\" cy=\"66.2\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"316.3\" cy=\"95.7\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"239.9\" cy=\"63.5\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"278.2\" cy=\"126.5\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"348.3\" cy=\"58.4\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"352.8\" cy=\"56.5\" r=\"4\" fill=\"#b05a51\"/><circle cx=\"326.9\" cy=\"55.4\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"238.3\" cy=\"122.4\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"268.2\" cy=\"63.4\" r=\"4\" fill=\"#2f7d6b\"/><circle cx=\"379.5\" cy=\"122.5\" r=\"4\" fill=\"#2f7d6b\"/><text x=\"226\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">观察点岩性与解译一致的比例</text><rect x=\"420\" y=\"10\" width=\"192\" height=\"150\" rx=\"9\" fill=\"#fdfcf9\" stroke=\"#e9e4d8\"/><text x=\"432\" y=\"26\" font-size=\"9.5\" font-family=\"monospace\" fill=\"#b26a39\" letter-spacing=\".8\">界线位置偏差</text><path d=\"M450 50 C490 70,540 110,582 130\" fill=\"none\" stroke=\"#2f7d6b\" stroke-width=\"22\" opacity=\".25\"/><path d=\"M450 50 C490 70,540 110,582 130\" fill=\"none\" stroke=\"#2f7d6b\" stroke-width=\"1.6\" stroke-dasharray=\"4 3\"/><path d=\"M450 56 C494 78,538 112,582 128\" fill=\"none\" stroke=\"#b26a39\" stroke-width=\"2\"/><text x=\"450.0\" y=\"44.0\" font-size=\"9\" fill=\"#2f7d6b\" text-anchor=\"start\">修编界线 ± 50 m 缓冲区</text><text x=\"432\" y=\"174\" font-size=\"9.5\" fill=\"#454545\">解译界线落在缓冲区内</text></svg></div><div class=\"figcap\"><b>图 3</b><span>左：按类别看混淆矩阵，&quot;蚀变&quot;类大面积被判成砂岩；中：野外观察点逐点核对；右：解译界线是否落在修编界线的缓冲区内。<b>小类别的召回率比总体精度更值得关注。</b></span></div><table class=\"dtable\"><thead><tr><th>指标</th><th>定义</th><th>验收目标</th></tr></thead><tbody><tr><td>各类别召回率</td><td>每种岩性被正确判别的像素比例（取最低的一类）</td><td>≥ 0.75</td></tr><tr><td>观察点符合率</td><td>野外观察点岩性与解译结果一致的比例</td><td>≥ 85%</td></tr><tr><td>界线位置偏差</td><td>解译界线与修编界线的平均距离</td><td>≤ 50 m（5 个像素）</td></tr><tr><td>不可解译区占比</td><td>被掩膜排除的面积比例</td><td>如实报告，单独说明</td></tr></tbody></table><p>可运行示范中的指标由页面在合成数据上实时计算，用来理解方法的行为，不代表真实工区效果。</p>"
+      },
+      "fails": [
+        {
+          "name": "跨区迁移失效",
+          "why": "换到不同气候区，风化程度和植被覆盖都变了，同一岩性的光谱特征随之改变。每个新区至少要补几个本地样区微调。"
+        },
+        {
+          "name": "覆盖区硬判",
+          "why": "没有做不可解译掩膜，模型在植被和云影下也照样给出岩性，看起来完整，其实是猜的。"
+        },
+        {
+          "name": "弱标签误导",
+          "why": "历史地质图的界线精度有限，直接当真值训练，模型会精确地复现老图的错误。"
+        },
+        {
+          "name": "同色异岩、同岩异色",
+          "why": "不同岩性光谱相近、同一岩性因风化而光谱不同，单靠光谱分不开，需要加入地貌、纹理和地层顺序约束。"
+        }
+      ]
+    },
+    "demo": {
+      "label": "可运行示范",
+      "mode": "auto",
+      "html": "demo/index.html",
+      "intro": "这是一幅程序合成的三波段影像，每个像素的真实岩性已知，所以能精确统计分类正确率；分类器是一个小型神经网络，打开页面时用合成光谱现场训练。结果只用来说明方法原理和参数影响，不代表真实工区的效果。\n在合成三波段影像上调光谱扰动与接纳置信度，观察岩性分类结果与待复核区域——对应流程第 3 步。",
+      "height": 1080
+    }
+  }
+}

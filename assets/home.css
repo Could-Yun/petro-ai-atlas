@@ -1,0 +1,62 @@
+/* Desktop homepage: orientation, workflow map, selected-stage directory. */
+.s-home-intro{min-height:360px}
+.s-home-intro .s-hero-in{min-height:360px;grid-template-columns:48% 52%}
+.s-home-intro .s-hero h1{font-size:43px}
+.s-home-intro h1{font-size:clamp(31px,3.1vw,46px);line-height:1.4;letter-spacing:1px;margin:20px 0 16px}
+.s-home-intro p{font-size:16px;margin-bottom:24px;line-height:2;max-width:490px}
+.s-home-intro .s-kicker{font-size:13px;letter-spacing:1.8px}
+.s-home-intro .s-geoart{margin-right:0}
+.s-home-intro .s-geoart>svg{height:345px}
+.s-reading-path{display:flex;gap:16px;align-items:center;color:#565656;font-size:14.5px;letter-spacing:1px;margin-bottom:14px}
+.s-reading-path span{display:flex;align-items:center;gap:7px}
+.s-reading-path span:before{content:'';width:4px;height:4px;border:1px solid #acacac;transform:rotate(45deg)}
+.s-reading-path i{font-style:normal;color:#3f3f3f}
+.s-home-map{padding-top:34px;padding-bottom:20px}
+.s-map-heading{display:flex;justify-content:space-between;align-items:end;gap:28px;margin-bottom:26px}
+.s-map-heading .s-side-title{font-size:13px;letter-spacing:2px;margin-bottom:9px}
+.s-map-heading h2{font-size:25.6px;font-weight:500;letter-spacing:.5px;line-height:1.4;margin:0}
+.s-map-heading p{font-size:15.5px;color:#3f3f3f;margin:8px 0 0;line-height:1.7}
+.s-map-coverage{display:flex;align-items:center;gap:16px;color:#3f3f3f;font-size:13.5px;white-space:nowrap;padding-bottom:2px}
+.s-map-coverage span:nth-child(2){padding-right:16px;border-right:1px solid #c8c8c8}
+.s-map-coverage b{font:22.7px Georgia,serif;color:#263b56;margin-right:4px}
+.s-map-coverage i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#30547f;margin-right:6px}
+.s-map-coverage i.s-map-dot-pending{background:transparent;border:1px solid #b0b0b0}
+.s-workmap{display:grid;grid-template-columns:repeat(13,minmax(0,1fr));padding:0 0 20px;border-bottom:1px solid #d6ddd1;position:relative}
+.s-workmap-stage{position:relative;padding:11px 2px 14px;background:transparent;border:1px solid transparent;border-radius:5px;display:flex;align-items:center;flex-direction:column;min-width:0;color:#444444;gap:0;transition:background .15s,border-color .15s}
+.s-workmap-stage:before{position:absolute;content:'';height:1px;background:#d2d2d2;left:-2px;right:-2px;top:44px}
+.s-workmap-stage:first-child:before{left:50%}
+.s-workmap-stage:last-child:before{right:50%}
+.s-workmap-stage:hover{background:#e2e9f2}
+.s-workmap-no{font:13.5px Consolas,monospace;line-height:17px;margin-bottom:11px;color:#4d4d4d}
+.s-workmap-dot{position:relative;z-index:1;width:10px;height:10px;border:1px solid #b0b0b0;background:#f3f3f3;border-radius:50%;margin-bottom:15px}
+.s-workmap-stage strong{font-size:16px;line-height:20px;font-weight:400;letter-spacing:.2px;white-space:nowrap}
+.s-workmap-stage small{font-size:13px;color:#4a4a4a;margin-top:7px}
+.s-workmap-stage.available{color:#253d59}
+.s-workmap-stage.available .s-workmap-dot{border-color:#3a587e;background:#3a587e;box-shadow:0 0 0 4px #dee5ee}
+.s-workmap-stage.available .s-workmap-no{color:#3f3f3f}
+.s-workmap-stage.available small{color:#3d3d3d}
+.s-workmap-stage.selected{background:#dce5f0;border-color:#becbb5}
+.s-workmap-stage.selected strong{font-weight:600;color:#252d3d}
+.s-workmap-stage.selected .s-workmap-dot{background:#c68019;border-color:#b27821;box-shadow:0 0 0 4px #feeacd}
+.s-map-summary{display:grid;grid-template-columns:28% minmax(0,1fr);gap:45px;min-height:300px;padding:30px 0 24px;align-items:start}
+.s-map-stage-copy{padding:5px 26px 0 0;border-right:1px solid #d2dbe7;min-height:222px}
+.s-map-stage-copy .s-detail-en{font-size:13px;letter-spacing:1.3px;line-height:1.8;margin-bottom:12px}
+.s-map-stage-copy h3{font-size:27.3px;font-weight:500;letter-spacing:1px;line-height:1.4;margin:0 0 12px}
+.s-map-stage-copy p{font-size:15.5px;line-height:1.95;color:#3e3e3e;margin:0;max-width:290px}
+.s-map-stage-meta{font-size:13.5px;color:#393939;margin-top:20px}
+.s-map-stage-meta i{display:inline-block;width:5px;height:5px;border-radius:50%;background:#3a587e;margin-right:7px}
+.s-map-list-head{display:flex;justify-content:space-between;color:#464646;font-size:13px;letter-spacing:1px;padding:6px 35px 13px 30px;border-bottom:1px solid #cfd7ca}
+.s-map-case{display:grid;grid-template-columns:24px minmax(0,1fr) 235px 17px;gap:12px;align-items:center;padding:16px 9px 16px 0;border-bottom:1px solid #d5dee9;transition:background .15s}
+.s-map-case:hover{background:#e0e9f3}
+.s-map-case-number{font:13.5px Consolas,monospace;color:#4c4c4c;text-align:center}
+.s-map-case-title{font-size:17px;color:#203249;font-weight:500;line-height:1.6}
+.s-map-case-method{font-size:14.5px;color:#424242;text-align:right;line-height:1.6}
+.s-map-case-arrow{font-size:17.5px;color:#815a21;justify-self:end}
+.s-map-candidates{list-style:none;margin:0;padding:0}
+.s-map-candidates li{padding:12px 12px 12px 30px;border-bottom:1px solid #d5deea;display:flex;justify-content:space-between;gap:20px;font-size:15.5px;color:#3d3d3d}
+.s-map-candidates small{font-size:13.5px;color:#484848}
+.s-map-pending-note{font-size:13.5px;line-height:1.8;color:#454545;padding:14px 0 0 30px}
+.s-map-footnote{padding:16px 0;border-top:1px solid #d5dcd0;display:flex;justify-content:space-between;gap:25px;font-size:13.5px;line-height:1.8;color:#454545}
+.s-home-map+.s-footer{border-top:1px solid #cedae9}
+@media(min-width:1500px){.s-home-intro h1{font-size:46px}}
+@media(min-width:761px) and (max-width:1100px){.s-home-intro h1{font-size:32px}.s-home-intro .s-kicker{font-size:12.7px;letter-spacing:1px}.s-home-intro .s-hero-in{grid-template-columns:49% 51%;min-height:325px}.s-home-intro{min-height:325px}.s-home-intro .s-geoart>svg{height:305px}.s-home-intro p{font-size:15.5px}.s-map-heading{gap:20px}.s-map-coverage{gap:10px;font-size:13px;flex-wrap:wrap;justify-content:flex-end;max-width:280px}.s-map-heading h2{font-size:23.7px}.s-workmap-stage strong{font-size:14.5px}.s-workmap-stage small{font-size:12.7px}.s-map-summary{grid-template-columns:27% minmax(0,1fr);gap:25px}.s-map-stage-copy{padding-right:18px}.s-map-stage-copy h3{font-size:25.5px}.s-map-stage-copy p{font-size:14.5px}.s-map-case{grid-template-columns:20px minmax(0,1fr) 165px 14px;gap:8px}.s-map-case-title{font-size:15.5px}.s-map-case-method{font-size:13.5px}}
