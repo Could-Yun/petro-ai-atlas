@@ -24,7 +24,7 @@ import json, shutil, zipfile
 # 可运行示范开头的数据说明（参照老师示范案例的写法）
 DATA_NOTES={
  'seis-fault':'这是一条程序合成的含断层地震剖面，断层位置已知，所以能精确计算 IoU、查准率和召回率；模型（类别平衡的逻辑回归）打开页面时用另一条合成剖面现场训练。',
- 'geo-spectral':'这是一幅程序合成的三波段影像，每个像素的真实岩性已知，所以能精确统计分类正确率；分类器是一个小型神经网络，打开页面时用合成光谱现场训练。',
+ 'geo-spectral':'默认数据是一幅程序合成的三波段影像。也可在控制台切换到“我的 CSV”，匹配 B1、B2、B3 与岩性标签，在浏览器 CPU 上重新训练小型 MLP，并查看留出样本的预测图、混淆矩阵和指标。CSV 仅在当前浏览器处理，不发送到服务器；演示数据与上传数据的结果均不能代表真实工区效果。',
  'geo-anomaly':'这是一组程序合成的化探采样点，哪里是油气微渗漏、哪里是污染已知，所以能精确计算查准率和召回率；异常分按与背景参考样本的距离计算，并与单指标阈值对比。',
  'geo-symbol':'这是一幅程序合成的图件，每个符号的真实类别已知，所以能精确统计识别正确率；识别用 k 近邻投票，参考样本也是现场合成的。',
  'geo-fracture':'这是一张程序合成的露头影像，每条裂缝的位置和方向已知，所以能精确计算 IoU 并与真实方向对比；模型（方向滤波特征 + 逻辑回归）打开页面时用另一张合成影像现场训练。',
@@ -192,11 +192,18 @@ def build():
             if c['id'] in DATA_NOTES: pkg['tabs']['demo']['intro']=DATA_NOTES[c['id']]+DATA_TAIL+'\n'+pkg['tabs']['demo']['intro']
         (p/'case.json').write_text(json.dumps(pkg,ensure_ascii=False,indent=2),encoding='utf-8')
         (p/'demo'/'config.js').write_text('window.LAB_CONFIG='+json.dumps(c,ensure_ascii=False)+';',encoding='utf-8')
-        for name in ['science.js','charts.js','model-contracts.js','lab-tools.js','lab.js','lab.css']:
+        for name in ['science.js','charts.js','model-contracts.js','lab-tools.js','user-data.js','lab.js','lab.css']:
             shutil.copy2(ROOT/'assets'/name,p/'demo'/name)
-        scripts=''.join('<script src="'+name+'"></script>' for name in ['science.js','charts.js','model-contracts.js','lab-tools.js','config.js','lab.js'])
+        if c['id']=='geo-spectral':
+            shutil.copy2(ROOT/'assets'/'user-data.js',p/'demo'/'user-data.js')
+        elif (p/'demo'/'user-data.js').exists():
+            (p/'demo'/'user-data.js').unlink()
+        script_names=['science.js','charts.js','model-contracts.js','lab-tools.js','config.js','lab.js']
+        if c['id']=='geo-spectral': script_names.insert(4,'user-data.js')
+        scripts=''.join('<script src="'+name+'"></script>' for name in script_names)
         (p/'demo'/'index.html').write_text('<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+c['title']+'</title><link rel="stylesheet" href="lab.css"></head><body><main id="lab"></main>'+scripts+'</body></html>',encoding='utf-8')
-        (p/'README.txt').write_text(f'{c["title"]}\n\n与老师 firstbreak-pick-case 相同的导入方式：\n1. 解压本案例压缩包。\n2. 主网站点击“添加案例”。\n3. 选择或拖入整个 {c["id"]} 文件夹。\n4. 校验通过后添加，浏览专业背景、案例流程、案例演示。\n\n直接双击 demo/index.html 也可离线运行。无需安装、联网或后端。\n方法：{c["method"]}\n数据：程序生成的教学合成数据；页面指标实时计算，不代表真实工区效果。\n\n{c["limitation"]}\n',encoding='utf-8')
+        data_note = ('默认使用教学合成数据；也可在“案例演示”切换到“我的 CSV”，映射三波段 B1/B2/B3 与岩性标签，在浏览器 CPU 上训练小型 MLP 并查看留出集结果。CSV 仅在本地浏览器处理，不上传。' if c['id']=='geo-spectral' else '程序生成的教学合成数据；页面指标实时计算，不代表真实工区效果。')
+        (p/'README.txt').write_text(f'{c["title"]}\n\n与老师 firstbreak-pick-case 相同的导入方式：\n1. 解压本案例压缩包。\n2. 主网站点击“添加案例”。\n3. 选择或拖入整个 {c["id"]} 文件夹。\n4. 校验通过后添加，浏览专业背景、案例流程、案例演示。\n\n直接双击 demo/index.html 也可离线运行。无需安装、联网或后端。\n方法：{c["method"]}\n数据：{data_note}\n\n{c["limitation"]}\n',encoding='utf-8')
         name=c['category']+'-'+c['title']+'.zip'; c['zip']=name
         with zipfile.ZipFile(ROOT/'downloads'/name,'w',zipfile.ZIP_DEFLATED) as z:
             for f in sorted(p.rglob('*')):
