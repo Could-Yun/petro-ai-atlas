@@ -201,32 +201,33 @@
       '<button class="btn primary" data-act="new">换一口井 ↻</button>' +
       '</div>' +
 
-      '<div class="demo-ctl">' +
+      '<div class="demo-work">' +
+      '<aside class="demo-console"><h4>实验控制台</h4><div class="demo-ctl">' +
       '<div class="ctl"><label>噪声 σ</label><input type="range" min="2" max="24" step="1" value="8" id="c-noise"><span class="val" id="v-noise">8</span></div>' +
       '<div class="ctl"><label>真实层数</label><input type="range" min="5" max="14" step="1" value="10" id="c-layers"><span class="val" id="v-layers">10</span></div>' +
       '<div class="ctl"><label>惩罚 β</label><input type="range" min="0.2" max="12" step="0.1" value="3" id="c-beta"><span class="val" id="v-beta">3.0</span></div>' +
-      '<label class="ctl tog on" id="c-true"><i></i>显示真实界面</label>' +
-      '</div>' +
-
-      '<div class="demo-grid">' +
-      '<div class="track-wrap"><div class="track">' +
-      '<svg id="logsvg" viewBox="0 0 462 620" role="img" aria-label="GR 曲线与分层结果"></svg>' +
-      '<div class="readout" id="readout">把鼠标移到曲线上</div></div>' +
-      '<div class="track-legend">' +
-      '<span><i style="background:' + C.curve + '"></i>GR 曲线</span>' +
-      '<span><i style="background:' + C.det + '"></i>检出界面</span>' +
-      '<span><i class="dash"></i>真实界面</span>' +
-      '<span><i style="background:' + C.thin + ';height:8px;width:11px;border-radius:2px"></i>薄层告警</span>' +
-      '</div></div>' +
-
-      '<div class="demo-side">' +
-      '<div class="metrics" id="metrics"></div>' +
-      '<div class="verdict" id="verdict"></div>' +
-      '<div class="fitbox"><div class="ft"><span>F1 vs 惩罚系数 β</span><span id="fit-note"></span></div>' +
-      '<svg id="fitsvg" viewBox="0 0 360 120"></svg></div>' +
-      '<div class="hintbox"><b>过分割 / 欠分割：</b>β 太小，噪声波动会被当成层界面；β 太大，真实薄层会被合并。' +
-      '<b>可用区间通常在曲线平台段的左端</b>——这也是实践里"先调 β 再调规则"的原因。</div>' +
-      '</div></div>' +
+      '<label class="ctl tog on" id="c-true"><i></i>显示真实界面</label></div></aside>' +
+      '<section class="demo-side"><div class="metrics" id="metrics"></div><div class="verdict" id="verdict"></div>' +
+      '<nav class="visual-tabs" role="tablist" aria-label="算法说明和运行结果">' +
+      '<button type="button" class="visual-tab is-active" role="tab" aria-selected="true" data-view="method">方法拆解</button>' +
+      '<button type="button" class="visual-tab" role="tab" aria-selected="false" data-view="track">GR 分层曲线</button>' +
+      '<button type="button" class="visual-tab" role="tab" aria-selected="false" data-view="fit">F1 参数曲线</button></nav>' +
+      '<div class="visual-stage">' +
+      '<article class="method-panel visual-panel is-active" data-panel="method">' +
+      '<div class="method-heading"><span>本示例实际运行的方法</span><b>动态规划 · 惩罚分段</b></div>' +
+      '<p>程序在满足最小层厚约束的候选界面中，寻找“层内 GR 波动误差 + 每增加一个界面的惩罚”总和最小的分层结果。它是优化算法示例，不是训练型机器学习模型。</p>' +
+      '<div class="method-flow"><div class="method-node"><small>输入</small><b>GR 测井曲线</b><span>一维采样序列与噪声</span></div><i>→</i>' +
+      '<div class="method-node"><small>代价</small><b>层内平方误差</b><span>用层内均值衡量拟合误差</span></div><i>→</i>' +
+      '<div class="method-node"><small>优化</small><b>动态规划</b><span>比较不同界面组合的累计代价</span></div><i>→</i>' +
+      '<div class="method-node"><small>输出</small><b>最优界面位置</b><span>与已知真值匹配并计算 F1</span></div></div>' +
+      '<div class="method-equation">目标：<b>层内拟合误差总和 + β × 界面数</b><br><span>β 小：更容易增加界面；β 大：更倾向合并相邻层。最小层厚规则会限制过薄分段。</span></div></article>' +
+      '<section class="visual-panel" data-panel="track"><div class="track-wrap"><div class="track">' +
+      '<svg id="logsvg" viewBox="0 0 462 620" role="img" aria-label="GR 曲线与分层结果"></svg><div class="readout" id="readout">把鼠标移到曲线上</div></div>' +
+      '<div class="track-legend"><span><i style="background:' + C.curve + '"></i>GR 曲线</span><span><i style="background:' + C.det + '"></i>检出界面</span>' +
+      '<span><i class="dash"></i>真实界面</span><span><i style="background:' + C.thin + ';height:8px;width:11px;border-radius:2px"></i>薄层告警</span></div></div></section>' +
+      '<section class="visual-panel fit-panel" data-panel="fit"><div class="fitbox"><div class="ft"><span>F1 vs 惩罚系数 β</span><span id="fit-note"></span></div>' +
+      '<svg id="fitsvg" viewBox="0 0 360 120"></svg></div><div class="hintbox"><b>过分割 / 欠分割：</b>β 太小，噪声波动会被当成层界面；β 太大，真实薄层会被合并。<b>可用区间通常在曲线平台段的左端。</b></div></section>' +
+      '</div></section></div>' +
 
       '<div class="ltable-wrap"><table class="ltable" id="ltable"></table></div>' +
       '</div>';
@@ -438,6 +439,19 @@
     }
 
     function paint() { drawTrack(); drawMetrics(); drawFit(); drawTable(); }
+
+    root.querySelector('.visual-tabs').addEventListener('click', function (event) {
+      var button = event.target.closest('[data-view]');
+      if (!button) return;
+      root.querySelectorAll('.visual-tab').forEach(function (tab) {
+        var active = tab === button;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      root.querySelectorAll('.visual-panel').forEach(function (panel) {
+        panel.classList.toggle('is-active', panel.getAttribute('data-panel') === button.getAttribute('data-view'));
+      });
+    });
 
     /* ------- 事件 ------- */
     root.querySelector('[data-act="new"]').addEventListener('click', function () {

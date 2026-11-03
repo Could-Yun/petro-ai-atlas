@@ -948,3 +948,39 @@ html.mdl-open{overflow:hidden}
 .adm-form .imp-f{margin-bottom:10px}
 .adm-f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .adm-f3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
+
+/* 测井教师示例：左侧控制台，右侧方法拆解与可切换图表。 */
+.demo-work{display:grid;grid-template-columns:minmax(235px,280px) minmax(0,1fr);gap:14px;padding:14px;align-items:start}
+.demo-console{position:sticky;top:12px;align-self:start;border:1px solid var(--line);border-radius:9px;background:var(--card-soft);padding:14px}
+.demo-console h4{margin:0 0 12px;font-size:15.5px;color:var(--ink-2)}
+.demo-work .demo-ctl{display:grid;gap:16px;padding:0;border:0;background:transparent;align-items:start}
+.demo-work .ctl{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.demo-work .ctl input[type=range]{grid-column:1/-1;width:100%;margin:4px 0}
+.demo-work .ctl .val{grid-column:2;grid-row:1}
+.demo-work .ctl.tog{display:flex}
+.demo-work .demo-side{padding:0;gap:10px}
+.demo-work .metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+.visual-tabs{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;border-bottom:1px solid var(--line);scrollbar-width:thin}
+.visual-tab{flex:0 0 auto;border:1px solid var(--line-2);border-radius:5px;padding:8px 12px;background:var(--card);color:var(--ink-2);font-size:14px;white-space:nowrap;cursor:pointer}
+.visual-tab:hover{border-color:var(--jade);color:var(--jade-d)}
+.visual-tab.is-active{background:var(--jade-d);border-color:var(--jade-d);color:#fff}
+.visual-tab:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.visual-panel{display:none}.visual-panel.is-active{display:block}
+.visual-stage{min-height:400px}
+.method-panel{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:20px}
+.method-heading{display:flex;justify-content:space-between;gap:10px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.method-heading span{font-size:13px;color:var(--ink-4);letter-spacing:.04em}
+.method-heading b{font-size:13px;font-weight:500;color:var(--jade-d);background:var(--jade-l);padding:6px 9px;border-radius:4px;white-space:nowrap}
+.method-panel>p{font-size:14.5px;line-height:1.8;color:var(--ink-2);margin:14px 0}
+.method-flow{display:flex;align-items:stretch;gap:7px}
+.method-flow>i{align-self:center;font-style:normal;font-size:18px;font-weight:700;color:var(--warn)}
+.method-node{flex:1;min-width:0;border:1px solid var(--line);border-top:3px solid var(--jade);border-radius:5px;background:var(--card-soft);padding:11px 9px}
+.method-node small{display:block;font-size:11px;color:var(--ink-4);letter-spacing:.08em;margin-bottom:8px}
+.method-node b{display:block;font-size:13px;color:var(--jade-d);line-height:1.5}
+.method-node span{display:block;font-size:12px;color:var(--ink-3);line-height:1.6;margin-top:6px}
+.method-equation{background:var(--warn-bg);border-left:3px solid var(--warn);padding:11px 13px;margin-top:15px;font-size:13.5px;line-height:1.7;color:var(--ink-2)}
+.method-equation span{font-size:12.5px;color:var(--ink-3)}
+.demo-work .track-wrap{border:1px solid var(--line);border-radius:8px;max-width:540px;margin:0 auto}
+.demo-work .fitbox{max-width:720px;margin:0 auto}
+.demo-work .hintbox{max-width:720px;margin:12px auto 0}
+@media(max-width:760px){.demo-work{grid-template-columns:1fr}.demo-console{position:static}.demo-work .demo-ctl{grid-template-columns:1fr 1fr}.demo-work .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.method-flow{display:grid;grid-template-columns:1fr}.method-flow>i{justify-self:center;transform:rotate(90deg)}.method-heading{align-items:flex-start;flex-direction:column}}
